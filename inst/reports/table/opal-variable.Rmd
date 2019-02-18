@@ -1,0 +1,82 @@
+### `r variable$name`
+
+```{r results=FALSE,echo=FALSE}
+hasCategories <- (length(variable$categories) > 0)
+hasAttributes <- (length(variable$attributes) > 0)
+hasNonMissingCategory <- FALSE
+if (hasCategories) {
+  for (category in variable$categories) {
+    if (!category$isMissing) {
+      hasNonMissingCategory <- TRUE      
+      break;
+    }
+  }
+}
+isCategorical <- (hasCategories & hasNonMissingCategory) | variable$valueType == 'boolean'
+isNumerical <- (variable$valueType == 'integer' | variable$valueType == 'decimal') & !isCategorical
+allIsNA <- TRUE
+if (withStatistics) {
+  allIsNA <- opal.execute(o, paste0("all(is.na(D$", variable$name, "))"))
+}
+```
+
+#### Properties
+
+Property         | Value  
+---------------- | ----------------
+Entity type      | `r variable$entityType`
+Value type       | `r variable$valueType`
+Unit             | `r variable$unit`
+Mime Type        | `r variable$mimeType`
+Repeatable       | `r variable$isRepeatable`
+Occurrence Group | `r variable$occurrenceGroup`
+
+
+```{r, results='asis', eval=hasAttributes, echo=FALSE}
+cat("#### Attributes\n")
+```
+
+```{r, results='asis', eval=hasAttributes, echo=FALSE}
+cat("Name | Value\n")
+cat("---------------- | ----------------\n")
+added <- c()
+for (attribute in variable$attributes) {
+  name <- attribute$name
+  if (length(attribute$namespace) > 0) {
+    name <- paste0("[", attribute$namespace, "] ", name)
+  }
+  if (length(grep(paste0("^", name, "$"), added)) == 0) {
+    values <- opal.attribute_values(variable$attributes, namespace=attribute$namespace, name=attribute$name)
+    cat(paste0(name, " | ", paste(values, collapse="<br/>"), "\n"))
+    added <- append(added, name)
+  }
+}
+```
+
+
+```{r, results='asis', eval=hasCategories, echo=FALSE}
+cat("#### Categories\n")
+```
+
+```{r, results='asis', eval=hasCategories, echo=FALSE}
+cat("Name | Label | Missing\n")
+cat("---------------- | ---------------- | ----------------\n")
+for (category in variable$categories) {
+  labels <- paste(opal.attribute_values(category$attributes, name="label"), collapse="<br/>")
+  row <- paste0(category$name, " | ", gsub("\\|","/", labels) ," | ")
+  if (category$isMissing) {
+    row <- paste0(row, "<span class='glyphicon glyphicon-ok'></span>")
+  }
+  cat(paste0(row, "\n"))
+}
+```
+
+```{r, include=FALSE, eval=withStatistics & isCategorical}
+outsummary <- knit_child('opal-variable-categorical.Rmd')
+```
+
+```{r, include=FALSE, eval=withStatistics & isNumerical}
+outsummary <- knit_child('opal-variable-continuous.Rmd')
+```
+
+`r if(withStatistics & (isNumerical | isCategorical)) paste(outsummary, collapse='\n')`

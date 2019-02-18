@@ -1,0 +1,97 @@
+```{r configuration, echo=FALSE,message=FALSE,results='hide'}
+#
+# Global settings
+#
+url <- getOption("opal.url", "https://demo.obiba.org:8443")
+username <- getOption("opal.username", "administrator")
+password <- getOption("opal.password", "password")
+datasource <- getOption("opal.datasource", "mica_demo")
+table <- getOption("opal.table", "FNAC")
+withStatistics <- getOption("opal.withStatistics", TRUE)
+withGraphs <- getOption("opal.withGraphs", TRUE)
+```
+
+```{r set-up, echo=FALSE,message=FALSE,results='hide'}
+# set up dictionary and data
+library(opal)
+o <- opal.login(username, password, url)
+variables <- opal.variables(o, datasource, table)
+t <- opal.table(o, datasource, table, counts=TRUE)
+if (withStatistics | withGraphs) {
+  opal.execute(o, 'require(e1071)')
+  opal.assign(o,'D', paste0(datasource, ".", table))
+}
+if (withGraphs) {
+  require(ggplot2)
+  opal.execute(o, 'require(ggplot2)')
+}
+```
+
+# `r table` Data Dictionary
+
+<br/>
+
+Name of the report     | Data Dictionary for `r table`
+---------------------- | -------------------
+Project                | `r datasource`
+Table                  | `r table`
+Number of variables    | `r t$variableCount`
+Number of participants | `r t$valueSetCount`
+Date                   | `r as.character(Sys.Date())`
+
+## Variables
+
+```{r variables, results='asis', echo=FALSE}
+for (variable in variables) {
+  cat(paste0("* [", variable$name, "](#", gsub("\\.","_",variable$name),")\n"))
+}
+```
+
+```{r run-variable-md, include=FALSE}
+out <- NULL
+for (variable in variables) {
+  out <- c(out, knit_child('opal-variable.Rmd'), sep='\n')
+}
+```
+
+`r paste(out, collapse='\n')`
+
+```{r clean-up, results=FALSE,echo=FALSE}
+opal.logout(o)
+```
+
+<style type="text/css">
+@media print{
+  body {
+    font-size: 12px;
+  }
+  h2, h3 {
+    page-break-before: always;
+  }
+}
+
+@media screen{
+  h3 {
+    border-top: solid 1px #ccc;
+    padding-top: 20px;
+  }
+}
+
+.navbar {
+  display: none;
+}
+
+#toc {
+  overflow: overlay;
+  max-height: 500px;
+}
+
+.table {
+  width: 0%;
+}
+
+.table td {
+  min-width: 200px;
+}
+
+</style>
