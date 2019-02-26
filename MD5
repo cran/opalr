@@ -1,8 +1,8 @@
-b24b032847b7b32374a4bc3344124937 *DESCRIPTION
+cb8b5d7dc47e8df4f73b14f0e85a7e02 *DESCRIPTION
 ebe026021d6b77b59bd5225c33211870 *NAMESPACE
 08148130e09319a11968e1f8ee0cf77e *R/datashield.admin.r
 0e10d4e120084733d2586fc1c7ee5955 *R/opal.admin.r
-a6dffa03b822d04219bd67fc12e8fea2 *R/opal.assign.r
+22039b7bb8add3df1f154bfc5034816d *R/opal.assign.r
 df4f2d8b1610704e7685a378ff299837 *R/opal.command.r
 0999e90554356300f289b7eefc070f21 *R/opal.datasource.r
 5ca9c387d846f5111cc6b88c02088643 *R/opal.execute.r
@@ -92,7 +92,7 @@ de6c791b6b39ec2bdd2b3415dc43947c *man/oadmin.install_github.Rd
 0d1fa40c9f8672aaa44e0760c4c3cb14 *man/oadmin.remove_package.Rd
 d6947558265ae170795432fb396a234a *man/opal.as_md_table.Rd
 47c68e4f446adf41717de423ac607094 *man/opal.assign.Rd
-c9f0c9944f495fbf4ed3919f6b76a512 *man/opal.assign.data.Rd
+06b8719478f70da1e8f9d142009746d9 *man/opal.assign.data.Rd
 76feba8f3dc3f3568aa909f1520b0f13 *man/opal.assign.script.Rd
 9ea3d6e1273cf6e5906e02ab7cd2edcc *man/opal.assign.table.Rd
 8ae495b7901ffa9b933c603c1b7f87ce *man/opal.assign.table.tibble.Rd
