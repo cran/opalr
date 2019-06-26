@@ -6,7 +6,7 @@
 \usage{
 opal.assign.table.tibble(opal, symbol, value, variables = NULL,
   missings = FALSE, identifiers = NULL, id.name = "id",
-  updated.name = NULL, async = FALSE)
+  with.factors = FALSE, updated.name = NULL, async = FALSE)
 }
 \arguments{
 \item{opal}{Opal object.}
@@ -23,7 +23,9 @@ opal.assign.table.tibble(opal, symbol, value, variables = NULL,
 
 \item{id.name}{Add a vector with the given name representing the entity identifiers (from Opal 2.6). Default is 'id'.}
 
-\item{updated.name}{Add a vector with the given name representing the creation and last update timestamps (from Opal 2.6). Default is NULL.}
+\item{with.factors}{If TRUE, the categorical variables will be assigned as factors (from Opal 2.14). Default is FALSE.}
+
+\item{updated.name}{Deprecated. Add a vector with the given name representing the creation and last update timestamps (from Opal 2.6 to 2.13). Default is NULL.}
 
 \item{async}{R script is executed asynchronously within the session (default is FALSE). If TRUE, the value returned is the ID of the command to look for (from Opal 2.1).}
 }
