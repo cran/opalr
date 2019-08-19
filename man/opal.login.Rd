@@ -5,13 +5,17 @@
 \title{Opal login}
 \usage{
 opal.login(username = getOption("opal.username"),
-  password = getOption("opal.password"), url = getOption("opal.url"),
+  password = getOption("opal.password"),
+  token = getOption("opal.token"), url = getOption("opal.url"),
   opts = getOption("opal.opts", list()), restore = NULL)
 }
 \arguments{
 \item{username}{User name in opal(s). Can be provided by "opal.username" option.}
 
 \item{password}{User password in opal(s). Can be provided by "opal.password" option.}
+
+\item{token}{Personal access token (since opal 2.15). Only effective if the username or the password is NULL or empty. 
+Can be provided by "opal.token" option.}
 
 \item{url}{Opal url or list of opal urls. Can be provided by "opal.url" option.}
 
@@ -30,12 +34,22 @@ Log in Opal(s).
 #### The below examples illustrate the different ways to login in opal ####
 
 # explicite username/password login
-o <- opal.login(username='administrator',password='password',url='https://opal-demo.obiba.org')
+o <- opal.login(username='administrator', password='password', url='https://opal-demo.obiba.org')
 opal.logout(o)
 
-# login using options
+ # explicite personal access token login
+o <- opal.login(token='HYG16LO0VaX4O0UardNbiqmr2ByBpRke', url='https://opal-demo.obiba.org')
+opal.logout(o)
+
+# login using options and user credentials
 options(opal.username='administrator',
  opal.password='password',
+ opal.url='https://opal-demo.obiba.org')
+o <- opal.login()
+opal.logout(o)
+
+# login using options and personal access token
+options(opal.token='HYG16LO0VaX4O0UardNbiqmr2ByBpRke',
  opal.url='https://opal-demo.obiba.org')
 o <- opal.login()
 opal.logout(o)
