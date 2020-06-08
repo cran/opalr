@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019 OBiBa. All rights reserved.
+# Copyright (c) 2020 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -15,15 +15,15 @@
 #' @param project Name of the project.
 #' @param df Return a data.frame (default is TRUE)
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.resources(o, 'datashield')
 #' opal.logout(o)
 #' }
 #' @export
 opal.resources <- function(opal, project, df=TRUE) {
-  if (!is.na(opal$version) && opal.version_compare(opal,"2.17")<0) {
-    stop("Resources are not available in opal ", opal$version, " (2.17.0 or higher is required)")
+  if (!is.na(opal$version) && opal.version_compare(opal,"3.0")<0) {
+    stop("Resources are not available in opal ", opal$version, " (3.0.0 or higher is required)")
   }
   res <- opal.get(opal, "project", project, "resources")
   if (!df) {
@@ -60,15 +60,15 @@ opal.resources <- function(opal, project, df=TRUE) {
 #' @param project Name of the project.
 #' @param resource Name of the resource in the project.
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.resource(o, 'datashield', 'CNSIM1r')
 #' opal.logout(o)
 #' }
 #' @export
 opal.resource <- function(opal, project, resource) {
-  if (!is.na(opal$version) && opal.version_compare(opal,"2.17")<0) {
-    stop("Resources are not available in opal ", opal$version, " (2.17.0 or higher is required)")
+  if (!is.na(opal$version) && opal.version_compare(opal,"3.0")<0) {
+    stop("Resources are not available in opal ", opal$version, " (3.0.0 or higher is required)")
   }
   opal.get(opal, "project", project, "resource", resource);
 }

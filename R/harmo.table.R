@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019 OBiBa. All rights reserved.
+# Copyright (c) 2020 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -20,7 +20,7 @@
 #' @param variables List of variable names or Javascript expression that selects the variables of a table (ignored if value does not refere to a table). See javascript documentation: http://wiki.obiba.org/display/OPALDOC/Variable+Methods
 #' @param missings Include the missing values (default is TRUE).
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' cqx <- harmo.table_get(o, "CPTP", "Cag_coreqx")
 #' opal.logout(o)
@@ -73,11 +73,11 @@ harmo.table_get <- function(opal, project, table, variables = NULL, missings = T
 #' @param type Entity type (what the data are about). Default is 'Participant'
 #' @return An invisible logical indicating whether the destination table exists.
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' cqx <- harmo.table_get(o, "CPTP", "Cag_coreqx")
-#' # do some (meta)data transformations
-#' harmo.table_get(o, cqx, "CPTP", "Cag_coreqx", overwrite = TRUE, force = TRUE)
+#' # do some (meta)data transformations, then save in opal's database
+#' harmo.table_save(o, cqx, "CPTP", "Cag_coreqx", overwrite = TRUE, force = TRUE)
 #' opal.logout(o)
 #' }
 #' @export
@@ -110,11 +110,13 @@ harmo.table_save <- function(opal, tibble, project, table, overwrite = TRUE, for
   save(tibble, file = file)
   
   .tickProgress(pb, tokens = list(what = paste0("Uploading R data file")))
-  opal.file_upload(opal, file, "/tmp")
+  tmp <- paste0("/tmp/", sample(1000:9999, 1), "/")
+  opal.file_mkdir(opal, tmp)
+  opal.file_upload(opal, file, tmp)
   filename <- basename(file)
   unlink(file)
-  opal.file_write(opal, paste0("/tmp/", filename))
-  opal.file_rm(opal, paste0("/tmp/", filename))
+  opal.file_write(opal, paste0(tmp, filename))
+  opal.file_rm(opal, paste0(tmp, filename))
   
   .tickProgress(pb, tokens = list(what = paste0("Loading R data file")))
   opal.execute(opal, paste0("load(file='", filename, "')"))

@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019 OBiBa. All rights reserved.
+# Copyright (c) 2020 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -18,7 +18,7 @@
 #' @param table Name of the table in the datasource.
 #' @return A data frame in long format (one row per annotation). 
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.annotations(o, 'CPTP', 'Coreqx_final')
 #' opal.logout(o)
@@ -59,7 +59,7 @@ opal.annotations <- function(opal, datasource, table) {
 #' 'taxonomy' (the taxonomy name), 'vocabulary' (the vocabulary name) and 'term' (the term value, if NULL
 #' of NA the annotation is removed).
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' annots <- opal.annotations(o, 'CPTP', 'Coreqx_final')
 #' opal.annotate(o, 'CPTP', 'Cag_coreqx', annots)

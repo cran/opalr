@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2019 OBiBa. All rights reserved.
+# Copyright (c) 2020 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -13,7 +13,7 @@
 #' @family workspace functions
 #' @param opal Opal object.
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.workspaces(o)
 #' opal.logout(o)
@@ -51,7 +51,7 @@ opal.workspaces <- function(opal) {
 #' @param ws The workspace name
 #' @param user The user name associated to the worskpace. If not provided, the current user is applied.
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.workspace_rm(o, 'test')
 #' opal.logout(o)
@@ -82,7 +82,7 @@ opal.workspace_rm <- function(opal, ws, user=NULL) {
 #' @param opal Opal object.
 #' @param save Save the workspace with given identifier (default is TRUE, current session ID if TRUE).
 #' @examples 
-#' \donttest{
+#' \dontrun{
 #' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
 #' opal.workspace_save(o, 'test')
 #' opal.logout(o)
