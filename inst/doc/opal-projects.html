@@ -12,10 +12,54 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2020-06-08" />
+<meta name="date" content="2020-11-03" />
 
 <title>Opal Projects API</title>
 
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+      div.sourceCode { overflow-x: auto; }
+  table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+    margin: 0; padding: 0; vertical-align: baseline; border: none; }
+  table.sourceCode { width: 100%; line-height: 100%; }
+  td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+  td.sourceCode { padding-left: 5px; }
+  code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+  code > span.dt { color: #902000; } /* DataType */
+  code > span.dv { color: #40a070; } /* DecVal */
+  code > span.bn { color: #40a070; } /* BaseN */
+  code > span.fl { color: #40a070; } /* Float */
+  code > span.ch { color: #4070a0; } /* Char */
+  code > span.st { color: #4070a0; } /* String */
+  code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+  code > span.ot { color: #007020; } /* Other */
+  code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+  code > span.fu { color: #06287e; } /* Function */
+  code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+  code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  code > span.cn { color: #880000; } /* Constant */
+  code > span.sc { color: #4070a0; } /* SpecialChar */
+  code > span.vs { color: #4070a0; } /* VerbatimString */
+  code > span.ss { color: #bb6688; } /* SpecialString */
+  code > span.im { } /* Import */
+  code > span.va { color: #19177c; } /* Variable */
+  code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+  code > span.op { color: #666666; } /* Operator */
+  code > span.bu { } /* BuiltIn */
+  code > span.ex { } /* Extension */
+  code > span.pp { color: #bc7a00; } /* Preprocessor */
+  code > span.at { color: #7d9029; } /* Attribute */
+  code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+  code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+  code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+  code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    </style>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -95,7 +139,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Opal Projects API</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2020-06-08</h4>
+<h4 class="date">2020-11-03</h4>
 
 
 
@@ -105,30 +149,90 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li>list tables,</li>
 <li>list variables,</li>
 <li>list taxonomies,</li>
-<li>and functions for getting all associated details (of a project, a table, a variable etc.) …</li>
+<li>and functions for getting all associated details (of a project, a table, a variable etc.) ...</li>
 </ul>
 <p>Note that these functions do not create a R session on the server side: it is only accessing the content of the Opal server (permission checks apply).</p>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
 <p>Setup the connection with Opal:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(opalr)
-o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</code></pre></div>
+o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="dt">url =</span> <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</code></pre></div>
+</div>
+<div id="project-operations" class="section level2">
+<h2>Project Operations</h2>
 <p>List the projects:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.projects</span>(o)</code></pre></div>
 <p>List the datasources (there is one per project) to get the details about how the data are persisted and what are the tables:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.datasources</span>(o)</code></pre></div>
 <p>List the tables in a datasource, with their count of variables and entities:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.tables</span>(o, <span class="dt">datasource =</span> <span class="st">&quot;CPTP&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>List the variables of a table and get the details of the variable annotations (one column per variable attribute with namespace):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.variables</span>(o, <span class="dt">datasource =</span> <span class="st">&quot;CPTP&quot;</span>, <span class="dt">table =</span> <span class="st">&quot;Coreqx_final&quot;</span>)</code></pre></div>
-<p>Get the values in a table for a specific entity:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.valueset</span>(o, <span class="dt">datasource =</span> <span class="st">&quot;FNAC&quot;</span>, <span class="dt">table =</span> <span class="st">&quot;FNAC&quot;</span>, <span class="dt">identifier =</span> <span class="st">&quot;1000502517535681229&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.tables</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
+<div id="table-operations" class="section level2">
+<h2>Table Operations</h2>
+<p>The table object can be retrieved as follow:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.table</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>The existence of a table can be checked:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.table_exists</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)</code></pre></div>
+<p>And more specifically, it is easy to verify whether a table is a view or not:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.table_exists</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>, <span class="dt">view =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>A table can be created, either as a raw table or a view:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># drop table if it exists</span>
+<span class="kw">opal.table_delete</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>)
+<span class="co"># then create a view, no variables</span>
+<span class="kw">opal.table_create</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>, <span class="dt">tables =</span> <span class="kw">c</span>(<span class="st">&quot;CNSIM.CNSIM1&quot;</span>, <span class="st">&quot;CNSIM.CNSIM2&quot;</span>, <span class="st">&quot;CNSIM.CNSIM3&quot;</span>))
+<span class="kw">opal.table</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div id="table-dictionary-operations" class="section level3">
+<h3>Table Dictionary Operations</h3>
+<p>List the variables of a table and get the details of the variable annotations (one column per variable attribute with namespace). This list also includes the category properties:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.variables</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)</code></pre></div>
+<p>It is also possible to get the full data dictionary of a table, as separate data frames of variables and categories. This is the recommended format for working with a data dictionary:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dico &lt;-<span class="st"> </span><span class="kw">opal.table_dictionary_get</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)
+dico<span class="op">$</span>variables
+dico<span class="op">$</span>categories</code></pre></div>
+<p>Here we modify the data dictionary by appending a derivation script to each of the variables:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dico<span class="op">$</span>variables<span class="op">$</span>script &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;$('&quot;</span>, dico<span class="op">$</span>variables<span class="op">$</span>name, <span class="st">&quot;')&quot;</span>)
+dico<span class="op">$</span>variables</code></pre></div>
+<p>Then we apply this derived variables dictionary to the view we have previously created and verify the counts of columns (variables) and rows (entities) in this table:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.table_dictionary_update</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>, <span class="dt">variables =</span> dico<span class="op">$</span>variables, <span class="dt">categories =</span> dico<span class="op">$</span>categories)
+<span class="kw">opal.table</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
+<div id="table-values-operations" class="section level3">
+<h3>Table Values Operations</h3>
+<p>Get the values in a table for a specific Participant entity:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.valueset</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM123&quot;</span>, <span class="dt">identifier =</span> <span class="st">&quot;1454&quot;</span>)</code></pre></div>
+<p>Get all the values of a table in our local R session as a data.frame (tibble) object:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cnsim1 &lt;-<span class="st"> </span><span class="kw">opal.table_get</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)
+cnsim2 &lt;-<span class="st"> </span><span class="kw">opal.table_get</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM2&quot;</span>)
+cnsim3 &lt;-<span class="st"> </span><span class="kw">opal.table_get</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM3&quot;</span>)</code></pre></div>
+<p>Then do some alterations on this data.frame and save it back as a raw table:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cnsim123 &lt;-<span class="st"> </span><span class="kw">rbind</span>(cnsim1, cnsim2, cnsim3)
+cnsim123<span class="op">$</span>DIS_AMI &lt;-<span class="st"> </span><span class="ot">NULL</span>
+cnsim123<span class="op">$</span>DIS_CVA &lt;-<span class="st"> </span><span class="ot">NULL</span>
+cnsim123<span class="op">$</span>DIS_DIAB &lt;-<span class="st"> </span><span class="ot">NULL</span>
+cnsim123
+<span class="kw">opal.table_save</span>(o, cnsim123, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM&quot;</span>, <span class="dt">overwrite =</span> <span class="ot">TRUE</span>, <span class="dt">force =</span> <span class="ot">TRUE</span>)
+<span class="kw">opal.table</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>Verify that this raw table resulting from the merge of the other tables as same values for a given Participant:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.valueset</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM&quot;</span>, <span class="dt">identifier =</span> <span class="st">&quot;1454&quot;</span>)</code></pre></div>
+<p>It is possible to truncate a table, i.e. delete ALL the values of a table (which must not be a view):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.table_truncate</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM&quot;</span>)
+<span class="kw">opal.table</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM&quot;</span>, <span class="dt">counts =</span> <span class="ot">TRUE</span>)</code></pre></div>
+</div>
+</div>
+<div id="taxonomy-operations" class="section level2">
+<h2>Taxonomy Operations</h2>
 <p>Variable attributes can be described by taxonomies. List the taxonomies:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.taxonomies</span>(o)</code></pre></div>
 <p>List the vocabularies of a taxonomy:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.vocabularies</span>(o, <span class="dt">taxonomy =</span> <span class="st">&quot;Mlstr_area&quot;</span>)</code></pre></div>
 <p>List the terms of a vocabulary:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.terms</span>(o, <span class="dt">taxonomy =</span> <span class="st">&quot;Mlstr_area&quot;</span>, <span class="dt">vocabulary =</span> <span class="st">&quot;Lifestyle_behaviours&quot;</span>)</code></pre></div>
+</div>
+<div id="teardown" class="section level2">
+<h2>Teardown</h2>
 <p>Good practice is to free server resources by sending a logout request:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.logout</span>(o)</code></pre></div>
+</div>
 
 
 

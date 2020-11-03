@@ -18,7 +18,7 @@ Get a vector of values (for each locale) matching the given attribute namespace 
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 var <- opal.variable(o, 'datashield', 'CNSIM1', 'GENDER')
 opal.attribute_values(var$attributes)
 opal.logout(o)
@@ -30,8 +30,6 @@ Other datasource functions:
 \code{\link{opal.annotations}()},
 \code{\link{opal.datasources}()},
 \code{\link{opal.datasource}()},
-\code{\link{opal.projects}()},
-\code{\link{opal.project}()},
 \code{\link{opal.tables}()},
 \code{\link{opal.table}()},
 \code{\link{opal.valueset}()},

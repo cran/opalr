@@ -18,7 +18,7 @@ Move and/or rename a file or a folder in the Opal file system.
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 # move a file to another folder
 opal.file_mv(o, '/home/administrator/export/some-data.csv', '/home/userx/deliverables')
 # rename a file
@@ -35,6 +35,7 @@ Other file functions:
 \code{\link{opal.file_cp}()},
 \code{\link{opal.file_download}()},
 \code{\link{opal.file_ls}()},
+\code{\link{opal.file_mkdir_tmp}()},
 \code{\link{opal.file_mkdir}()},
 \code{\link{opal.file_read}()},
 \code{\link{opal.file_rm}()},

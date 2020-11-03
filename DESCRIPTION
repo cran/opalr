@@ -1,5 +1,5 @@
 Package: opalr
-Version: 1.4.1
+Version: 1.5.0
 Title: 'Opal' Data Repository Client and 'DataSHIELD' Utils
 Authors@R: 
     c(person(given = "Yannick",
@@ -15,7 +15,7 @@ Authors@R:
              role="cph",
              email="info@obiba.org"))
 Depends: R (>= 3.1), httr
-Imports: xml2, jsonlite, mime, progress
+Imports: jsonlite, mime, progress
 Suggests: e1071, knitr, knitrBootstrap, rmarkdown, tibble, testthat
 Description: Data integration Web application for biobanks by 'OBiBa'. 'Opal' is
     the core database application for biobanks. Participant data, once
@@ -31,14 +31,14 @@ License: GPL-3
 URL: https://www.obiba.org/ https://www.obiba.org/pages/products/opal/
         https://doi.org/10.1093/ije/dyx180 http://www.datashield.ac.uk/
 BugReports: https://github.com/obiba/opalr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2020-06-08 08:29:03 UTC; yannick
+Packaged: 2020-11-03 09:49:51 UTC; yannick
 Author: Yannick Marcon [aut, cre] (<https://orcid.org/0000-0003-0138-2023>),
   Amadou Gaye [ctb] (<https://orcid.org/0000-0002-1180-2792>),
   OBiBa group [cph]
 Maintainer: Yannick Marcon <yannick.marcon@obiba.org>
 Repository: CRAN
-Date/Publication: 2020-06-08 09:30:02 UTC
+Date/Publication: 2020-11-03 10:20:03 UTC

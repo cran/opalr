@@ -21,7 +21,7 @@ Declare DataSHIELD aggregate and assign methods as defined by the package.
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 dsadmin.set_package_methods(o, 'dsBase')
 opal.logout(o)
 }
@@ -31,6 +31,8 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.get_methods}()},
 \code{\link{dsadmin.get_method}()},
 \code{\link{dsadmin.get_options}()},
+\code{\link{dsadmin.install_github_package}()},
+\code{\link{dsadmin.install_local_package}()},
 \code{\link{dsadmin.install_package}()},
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},

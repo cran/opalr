@@ -17,7 +17,7 @@
 #' @return The DataSHIELD package descriptions as a data.frame or a list
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.package_descriptions(o)
 #' opal.logout(o)
 #' }
@@ -86,7 +86,7 @@ dsadmin.package_descriptions <- function(opal, fields=NULL, df=TRUE) {
 #' @param fields A character vector giving the fields to extract from each package's DESCRIPTION file in addition to the default ones, or NULL (default). Unavailable fields result in NA values.
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.package_description(o, 'dsBase')
 #' opal.logout(o)
 #' }
@@ -120,22 +120,93 @@ dsadmin.package_description <- function(opal, pkg, fields=NULL) {
 #' @return TRUE if installed
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.install_package(o, 'dsBase')
 #' opal.logout(o)
 #' }
 #' @export
 dsadmin.install_package <- function(opal, pkg, githubusername=NULL, ref=NULL) {
-  if(is.list(opal)){
-    lapply(opal, function(o){dsadmin.install_package(o, pkg, githubusername=githubusername, ref=ref)})
+  if (!is.null(githubusername) && !is.null(ref)) {
+    dsadmin.install_github_package(opal, pkg, username=githubusername, ref=ref)
   } else {
-    if((!is.null(ref)) && (!is.null(githubusername))) {
-      query <- list(name=paste(githubusername,pkg,sep="/"),ref=ref)
+    if(is.list(opal)){
+      lapply(opal, function(o){dsadmin.install_package(o, pkg, githubusername=githubusername, ref=ref)})
     } else {
       query <- list(name=pkg)
+      opal.post(opal, "datashield", "packages", query=query)
+      dsadmin.installed_package(opal, pkg)
     }
+  }
+}
+
+#' Install a DataSHIELD package from GitHub
+#' 
+#' Install a package from a DataSHIELD source repository on GitHub.
+#'
+#' @family DataSHIELD functions
+#' @param opal Opal object or list of opal objects. 
+#' @param pkg Package name.
+#' @param username GitHub username/organization of the git repository. Default is 'datashield'.
+#' @param ref Desired git reference (could be a commit, tag, or branch name). Default is 'master'.
+#' @return TRUE if installed
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' dsadmin.install_github_package(o, 'dsOmics', username='isglobal-brge')
+#' opal.logout(o)
+#' }
+#' @export
+dsadmin.install_github_package <- function(opal, pkg, username='datashield', ref='master') {
+  if(is.list(opal)){
+    lapply(opal, function(o){dsadmin.install_github_package(o, pkg, username=username, ref=ref)})
+  } else {
+    query <- list(name=paste(username,pkg,sep="/"),ref=ref)
     opal.post(opal, "datashield", "packages", query=query)
     dsadmin.installed_package(opal, pkg)
+  }
+}
+
+#' Install a DataSHIELD package from a local archive file
+#' 
+#' Install a package from a package archive file, resulting from the build of a server-side DataSHIELD package.
+#' This will upload the archive file and run its installation in the R server.
+#'
+#' @family DataSHIELD functions
+#' @param opal Opal object or list of opal objects. 
+#' @param path Path to the package archive, ending with .
+#' @return TRUE if installed
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # install a pre-built local archive file
+#' dsadmin.install_local_package(o, '~/dsExposome_1.0.0.tar.gz')
+#' # or build archive file from local package source (in current working folder)
+#' dsadmin.install_local_package(o, devtools::build())
+#' opal.logout(o)
+#' }
+#' @export
+dsadmin.install_local_package <- function(opal, path) {
+  if (!file.exists(path)) {
+    stop("Package archive file cannot be found at: ", path)
+  }
+  filename <- basename(path)
+  if (!endsWith(filename, ".tar.gz")) {
+    stop("Not a package archive file: ", filename)
+  }
+  # strip suffix
+  pkg <- strsplit(filename, "\\.")[[1]][1]
+  # strip version
+  pkg <- strsplit(pkg, "_")[[1]][1]
+  
+  if(is.list(opal)){
+    lapply(opal, function(o){dsadmin.install_local_package(o, path)})
+  } else {
+    tmp <- opal.file_mkdir_tmp(opal)
+    opal.file_upload(opal, path, tmp)
+    opal.file_write(opal, paste0(tmp, filename))
+    opal.file_rm(opal, tmp)
+    opal.execute(opal, paste0("install.packages('", filename, "', repos = NULL, type ='source')"))
+    dsadmin.set_package_methods(opal, pkg)
   }
 }
 
@@ -148,7 +219,7 @@ dsadmin.install_package <- function(opal, pkg, githubusername=NULL, ref=NULL) {
 #' @param pkg Package name.
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.remove_package(o, 'dsBase')
 #' opal.logout(o)
 #' }
@@ -171,7 +242,7 @@ dsadmin.remove_package <- function(opal, pkg) {
 #' @return TRUE if installed
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.installed_package(o, 'dsBase')
 #' opal.logout(o)
 #' }
@@ -203,7 +274,7 @@ dsadmin.installed_package <- function(opal, pkg) {
 #' @param type Type of the method: "aggregate" (default) or "assign"
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.set_method(o, 'foo', 'base::mean')
 #' opal.logout(o)
 #' }
@@ -234,7 +305,7 @@ dsadmin.set_method <- function(opal, name, func=NULL, path=NULL, type="aggregate
 #' @param type Type of the method: "aggregate" (default) or "assign"
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.rm_method(o, 'foo')
 #' opal.logout(o)
 #' }
@@ -255,7 +326,7 @@ dsadmin.rm_method <- function(opal, name, type="aggregate") {
 #' @param type Type of the method: "aggregate" or "assign". Default is NULL (=all type of methods).
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.rm_methods(o)
 #' opal.logout(o)
 #' }
@@ -282,7 +353,7 @@ dsadmin.rm_methods <- function(opal, type=NULL) {
 #' @param type Type of the method: "aggregate" (default) or "assign"
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.get_method(o, 'class')
 #' opal.logout(o)
 #' }
@@ -320,7 +391,7 @@ dsadmin.get_method <- function(opal, name, type="aggregate") {
 #' @param type Type of the method: "aggregate" (default) or "assign"
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.get_methods(o)
 #' opal.logout(o)
 #' }
@@ -377,7 +448,7 @@ dsadmin.get_methods <- function(opal, type="aggregate") {
 #' @return TRUE if successfull
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.set_package_methods(o, 'dsBase')
 #' opal.logout(o)
 #' }
@@ -406,7 +477,7 @@ dsadmin.set_package_methods <- function(opal, pkg, type=NULL) {
 #' @param type Type of the method: "aggregate" or "assign". Default is NULL (=all type of methods).
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.rm_package_methods(o, 'dsBase')
 #' opal.logout(o)
 #' }
@@ -436,7 +507,7 @@ dsadmin.rm_package_methods <- function(opal, pkg, type=NULL) {
 #' @param opal Opal object or list of opal objects.
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.get_options(o)
 #' opal.logout(o)
 #' }
@@ -467,7 +538,7 @@ dsadmin.get_options <- function (opal) {
 #' @param value Value of the option
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.set_option(o, 'foo', 'bar')
 #' opal.logout(o)
 #' }
@@ -489,7 +560,7 @@ dsadmin.set_option <- function (opal, name, value) {
 #' @param name Name of the option
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' dsadmin.rm_option(o, 'foo')
 #' opal.logout(o)
 #' }
@@ -500,5 +571,87 @@ dsadmin.rm_option <- function (opal, name) {
   } else {
     # rm option
     ignore <- opal.delete(opal, "datashield", "option", query=list(name=name))
+  }
+}
+
+#' Add or update a DataSHIELD permission
+#' 
+#' Add or update a permission on the DataSHIELD service.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @param permission The permission to apply: use or administrate.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' dsadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' dsadmin.perm(o)
+#' dsadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+dsadmin.perm_add <- function(opal, subject, type = "user", permission) {
+  if (!(tolower(type) %in% c("user", "group"))) {
+    stop("Not a valid subject type: ", type)
+  }
+  perms <- list('use' = 'DATASHIELD_USE', 'administrate' = 'DATASHIELD_ALL')
+  perm <- perms[[permission]]
+  if (is.null(perm)) {
+    stop("Not a valid DataSHIELD permission name: ", permission)
+  }
+  dsadmin.perm_delete(opal, subject, type)
+  for (i in 1:length(subject)) {
+    ignore <- opal.post(opal, "system", "permissions", "datashield", query = list(principal = subject[i], type = toupper(type), permission = perm))
+  }
+}
+
+#' Get the DataSHIELD permissions
+#' 
+#' Get the permissions that were applied to the DataSHIELD service.
+#' 
+#' @param opal Opal connection object.
+#' 
+#' @return A data.frame with columns: subject, type, permission
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' dsadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' dsadmin.perm(o)
+#' dsadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+dsadmin.perm <- function(opal) {
+  perms <- list('DATASHIELD_USE' = 'use', 'DATASHIELD_ALL' = 'administrate')
+  acls <- opal.get(opal, "system", "permissions", "datashield")
+  .aclsToDataFrame(perms, acls)
+}
+
+#' Delete a DataSHIELD permission
+#' 
+#' Delete a permission that was applied to the DataSHIELD service. Silently returns when there is no such permission.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' dsadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' dsadmin.perm(o)
+#' dsadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+dsadmin.perm_delete <- function(opal, subject, type = "user") {
+  if (!(tolower(type) %in% c("user", "group"))) {
+    stop("Not a valid subject type: ", type)
+  }
+  if (length(subject)<1) {
+    stop("At least one subject is required")
+  }
+  for (i in 1:length(subject)) {
+    ignore <- opal.delete(opal, "system", "permissions", "datashield", query = list(principal = subject[i], type = toupper(type)))  
   }
 }

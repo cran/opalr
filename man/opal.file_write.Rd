@@ -18,7 +18,7 @@ Write a file from the Opal file system into the R session workspace.
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 # user home expansion
 opal.file_write(o, "~/spss/DatabaseTest.sav")
 # rename file
@@ -33,6 +33,7 @@ Other file functions:
 \code{\link{opal.file_cp}()},
 \code{\link{opal.file_download}()},
 \code{\link{opal.file_ls}()},
+\code{\link{opal.file_mkdir_tmp}()},
 \code{\link{opal.file_mkdir}()},
 \code{\link{opal.file_mv}()},
 \code{\link{opal.file_read}()},

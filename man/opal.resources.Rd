@@ -18,13 +18,21 @@ Get the resource references of a project
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
-opal.resources(o, 'datashield')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+opal.resources(o, 'RSRC')
 opal.logout(o)
 }
 }
 \seealso{
 Other project functions: 
+\code{\link{opal.project_create}()},
+\code{\link{opal.project_delete}()},
+\code{\link{opal.project_exists}()},
+\code{\link{opal.projects}()},
+\code{\link{opal.project}()},
+\code{\link{opal.resource_create}()},
+\code{\link{opal.resource_exists}()},
+\code{\link{opal.resource_get}()},
 \code{\link{opal.resource}()}
 }
 \concept{project functions}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/opal.resource.r
 \name{opal.resource}
 \alias{opal.resource}
-\title{Get a resource of a project}
+\title{Get a resource reference of a project}
 \usage{
 opal.resource(opal, project, resource)
 }
@@ -14,17 +14,25 @@ opal.resource(opal, project, resource)
 \item{resource}{Name of the resource in the project.}
 }
 \description{
-Get a resource of a project
+Get a resource reference of a project
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
-opal.resource(o, 'datashield', 'CNSIM1r')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+opal.resource(o, 'RSRC', 'CNSIM1')
 opal.logout(o)
 }
 }
 \seealso{
 Other project functions: 
+\code{\link{opal.project_create}()},
+\code{\link{opal.project_delete}()},
+\code{\link{opal.project_exists}()},
+\code{\link{opal.projects}()},
+\code{\link{opal.project}()},
+\code{\link{opal.resource_create}()},
+\code{\link{opal.resource_exists}()},
+\code{\link{opal.resource_get}()},
 \code{\link{opal.resources}()}
 }
 \concept{project functions}

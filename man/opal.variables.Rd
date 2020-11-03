@@ -22,7 +22,7 @@ Get variables of a table
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 opal.variables(o, 'datashield', 'CNSIM1')
 opal.logout(o)
 }
@@ -34,8 +34,6 @@ Other datasource functions:
 \code{\link{opal.attribute_values}()},
 \code{\link{opal.datasources}()},
 \code{\link{opal.datasource}()},
-\code{\link{opal.projects}()},
-\code{\link{opal.project}()},
 \code{\link{opal.tables}()},
 \code{\link{opal.table}()},
 \code{\link{opal.valueset}()},

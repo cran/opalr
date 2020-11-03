@@ -20,7 +20,7 @@ Get all the vocabularies of a taxonomy. A vocabulary describes the possible valu
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 opal.vocabularies(o, 'Mlstr_area')
 opal.logout(o)
 }
@@ -28,6 +28,9 @@ opal.logout(o)
 \seealso{
 Other taxonomy functions: 
 \code{\link{opal.taxonomies}()},
+\code{\link{opal.taxonomy_delete}()},
+\code{\link{opal.taxonomy_download}()},
+\code{\link{opal.taxonomy_upload}()},
 \code{\link{opal.taxonomy}()},
 \code{\link{opal.terms}()},
 \code{\link{opal.vocabulary}()}

@@ -20,7 +20,7 @@
 #' @param df Return a data.frame (default is TRUE)
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' opal.taxonomies(o)
 #' opal.logout(o)
 #' }
@@ -65,16 +65,94 @@ opal.taxonomies <- function(opal, locale="en", df=TRUE) {
 #' 
 #' @family taxonomy functions
 #' @param opal Opal object.
-#' @param taxonomy Name of the taxonomy
+#' @param taxonomy Name of the taxonomy.
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' opal.taxonomy(o, 'Mlstr_area')
 #' opal.logout(o)
 #' }
 #' @export
 opal.taxonomy <- function(opal, taxonomy) {
   opal.get(opal, "system", "conf", "taxonomy", taxonomy)
+}
+
+#' Delete a taxonomy
+#' 
+#' Delete a taxonomy, without failing if the taxonomy does not exist.
+#' 
+#' @family taxonomy functions
+#' @param opal Opal object.
+#' @param taxonomy Name of the taxonomy.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' opal.taxonomy_delete(o, 'Mlstr_area')
+#' opal.logout(o)
+#' }
+#' @export
+opal.taxonomy_delete <- function(opal, taxonomy) {
+  ignore <- opal.delete(opal, "system", "conf", "taxonomy", taxonomy)
+}
+
+#' Download a taxonomy file
+#' 
+#' Download a taxonomy stored in a file in YAML format.
+#' 
+#' @family taxonomy functions
+#' @param opal Opal object.
+#' @param taxonomy Name of the taxonomy.
+#' @param destination Path to the taxonomy YAML file. If not provided, the downloaded file will
+#' have the taxonomy name with the '.yml' extension and will be located in the working directory. 
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' opal.taxonomy_download(o, 'Mlstr_area', '~/some/dir/Mlstr_area.yml')
+#' opal.logout(o)
+#' }
+#' @export
+opal.taxonomy_download <- function(opal, taxonomy, destination=NULL) {
+  content <- opal.get(opal, "system", "conf", "taxonomy", taxonomy, "_download")
+  dest <- destination
+  if (is.null(destination)) {
+    dest <- paste0(taxonomy, ".yml")
+  } else if (dirname(destination) != ".") {
+    dir.create(dirname(destination), showWarnings=FALSE, recursive=TRUE)
+  }
+  fh <- file(dest,'wb')
+  writeLines(content, fh)
+  close(fh)
+}
+
+#' Upload a taxonomy file
+#' 
+#' Upload a taxonomy stored in a local file in YAML format. This operation 
+#' will fail if the taxonomy already exists, see \link{opal.taxonomy_delete}.
+#' 
+#' @family taxonomy functions
+#' @param opal Opal object.
+#' @param path Path to the taxonomy YAML file.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' opal.taxonomy_upload(o, '~/some/dir/taxo.yml')
+#' opal.logout(o)
+#' }
+#' @export
+opal.taxonomy_upload <- function(opal, path) {
+  pb <- .newProgress(total = 3)
+  
+  .tickProgress(pb, tokens = list(what = paste0("Uploading taxonomy file")))
+  tmp <- opal.file_mkdir_tmp(opal)
+  opal.file_upload(opal, path, tmp)
+  filename <- basename(path)
+  file <- paste0(tmp, filename)
+  
+  .tickProgress(pb, tokens = list(what = paste0("Uploading taxonomy file")))
+  opal.post(opal, "system", "conf", "taxonomies", "import", "_file", query = list(file = file))
+  opal.file_rm(opal, tmp)
+  
+  rval <- .tickProgress(pb, tokens = list(what = "Save completed"))
 }
 
 #' Get the vocabularies of a taxonomy
@@ -88,7 +166,7 @@ opal.taxonomy <- function(opal, taxonomy) {
 #' @param df Return a data.frame (default is TRUE)
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' opal.vocabularies(o, 'Mlstr_area')
 #' opal.logout(o)
 #' }
@@ -133,7 +211,7 @@ opal.vocabularies <- function(opal, taxonomy, locale="en", df=TRUE) {
 #' @param vocabulary Name of the vocabulary in the taxonomy
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' opal.vocabulary(o, 'Mlstr_area', 'Lifestyle_behaviours')
 #' opal.logout(o)
 #' }
@@ -154,7 +232,7 @@ opal.vocabulary <- function(opal, taxonomy, vocabulary) {
 #' @param df Return a data.frame (default is TRUE)
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' opal.terms(o, 'Mlstr_area', 'Lifestyle_behaviours')
 #' opal.logout(o)
 #' }

@@ -9,14 +9,14 @@ opal.taxonomy(opal, taxonomy)
 \arguments{
 \item{opal}{Opal object.}
 
-\item{taxonomy}{Name of the taxonomy}
+\item{taxonomy}{Name of the taxonomy.}
 }
 \description{
 Get a specific taxonomy details.
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 opal.taxonomy(o, 'Mlstr_area')
 opal.logout(o)
 }
@@ -24,6 +24,9 @@ opal.logout(o)
 \seealso{
 Other taxonomy functions: 
 \code{\link{opal.taxonomies}()},
+\code{\link{opal.taxonomy_delete}()},
+\code{\link{opal.taxonomy_download}()},
+\code{\link{opal.taxonomy_upload}()},
 \code{\link{opal.terms}()},
 \code{\link{opal.vocabularies}()},
 \code{\link{opal.vocabulary}()}

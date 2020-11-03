@@ -18,7 +18,7 @@ Copy a file or a folder to another location in the Opal file system.
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 # copy a file to another folder
 opal.file_cp(o, '/home/administrator/export/some-data.csv', '/home/userx/deliverables')
 # copy recursively a folder to another folder
@@ -30,6 +30,7 @@ opal.logout(o)
 Other file functions: 
 \code{\link{opal.file_download}()},
 \code{\link{opal.file_ls}()},
+\code{\link{opal.file_mkdir_tmp}()},
 \code{\link{opal.file_mkdir}()},
 \code{\link{opal.file_mv}()},
 \code{\link{opal.file_read}()},

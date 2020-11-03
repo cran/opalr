@@ -8,6 +8,36 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------------
 
+#' Apply the dictionary to a tibble (deprecated)
+#'
+#' Deprecated: use \link{dictionary.apply} instead.
+#'
+#' @param tibble Tibble to be decorated.
+#' @param variables A data frame with one row per variable (column name) and then one column per property/attribute.
+#' @param categories A data frame with one row per category (columns variable and name) and then column per property/attribute.
+#' @examples 
+#' \dontrun{
+#' data <- tibble::as_tibble(mtcars)
+#' variables <- tibble::tribble(
+#'   ~name, ~valueType, ~`label:en`,  ~`Namespace::Name`, ~unit, ~repeatable, ~index,
+#'   "mpg", "decimal", "Mpg label",  "Value1", "years", 0, 1,
+#'   "cyl", "decimal", "Cyl label",  "Value2", "kg/m2", 0, 2,
+#'   "disp", "decimal", "Disp label", NA, NA, 1, 3
+#' )
+#' categories <- tibble::tribble(
+#'   ~variable, ~name, ~missing, ~`label:en`, ~`label:fr`,
+#'   "cyl", "4", 0, "Four", "Quatre",
+#'   "cyl", "6", 0, "Six", "Six",
+#'   "cyl", "8", 1, "Height", "Huit"
+#' )
+#' data <- dictionary.apply(data, variables, categories)
+#' }
+#' @export
+harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
+  warning("Deprecated: harmo.dictionary_apply() is replaced by dictionary.apply()")
+  dictionary.apply(tibble, variables, categories = categories)
+}
+
 #' Apply the dictionary to a tibble
 #'
 #' Apply the dictionary described in a Opal Excel format as attributes of the tibble's columns.
@@ -30,10 +60,10 @@
 #'   "cyl", "6", 0, "Six", "Six",
 #'   "cyl", "8", 1, "Height", "Huit"
 #' )
-#' data <- harmo.dictionary_apply(data, variables, categories)
+#' data <- dictionary.apply(data, variables, categories)
 #' }
 #' @export
-harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
+dictionary.apply <- function(tibble, variables, categories = NULL) {
   tbl <- tibble
   names <- names(tbl)
   applyAttribute <- function(attrs, name, value) {
@@ -95,7 +125,7 @@ harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
       } else if (n == "occurrenceGroupe") {
         attrs <- applyAttribute(attrs, "opal.occurrence_group", var[[n]])
       } else if (n == "repeatable") {
-        attrs <- applyAttribute(attrs, "opal.repeatable", var[[n]])
+        attrs <- applyAttribute(attrs, "opal.repeatable", .as.zeroOne(var[[n]]))
       } else if (n == "index") {
         attrs <- applyAttribute(attrs, "opal.index", var[[n]])
       } else if (n != "name") {
@@ -117,7 +147,7 @@ harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
               warning("Multilang labels are not supported yet")
             }
           } else if (n == "missing") {
-            missings <- as.logical(varcats[[n]])
+            missings <- as.logical(sapply(varcats[[n]], .as.zeroOne))
           }
         }
         attributes(tbl[[var$name]])$labels <- labels
@@ -138,9 +168,9 @@ harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
   tbl
 }
 
-#' Update the dictionary of a Opal table
+#' Update the dictionary of a Opal table (deprecated)
 #' 
-#' Directly update the dictionary of a Opal table with the provided dictionary.
+#' Deprecated: use \link{opal.table_dictionary_update} instead.
 #' 
 #' @param opal Opal connection object.
 #' @param project Project name where the table will be located.
@@ -150,7 +180,7 @@ harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
 #' no categories, this parameter is optional.
 #' @examples 
 #' \dontrun{
-#' o <- opal.login('administrator','password','https://opal-demo.obiba.org')
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
 #' variables <- tibble::tribble(
 #'   ~name, ~valueType, ~`label:en`,  ~`Namespace::Name`, ~unit, ~repeatable, ~index,
 #'   "mpg", "decimal", "Mpg label",  "Value1", "years", 0, 1,
@@ -163,11 +193,11 @@ harmo.dictionary_apply <- function(tibble, variables, categories = NULL) {
 #'   "cyl", "6", 0, "Six", "Six",
 #'   "cyl", "8", 1, "Height", "Huit"
 #' )
-#' harmo.dictionary_update(o, "test", "mtcars", variables, categories)
+#' opal.table_dictionary_update(o, "test", "mtcars", variables, categories)
 #' opal.logout(o)
 #' }
 #' @export
 harmo.dictionary_update <- function(opal, project, table, variables, categories = NULL) {
-  body <- .toJSONVariables(table=table, variables = variables, categories = categories)
-  opal.post(opal, "datasource", project, "table", table, "variables", contentType = "application/json", body = body)
+  warning("Deprecated: harmo.dictionary_update() is deprecated by opal.table_dictionary_update()")
+  opal.table_dictionary_update(opal, project, table, variables, categories = categories)
 }
