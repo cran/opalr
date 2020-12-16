@@ -12,10 +12,12 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2020-11-03" />
+<meta name="date" content="2020-12-16" />
 
 <title>Opal R Session API</title>
 
+<link href="data:text/css;charset=utf-8,%0Aa%2Eanchor%2Dsection%20%7Bmargin%2Dleft%3A%2010px%3B%20visibility%3A%20hidden%3B%20color%3A%20inherit%3B%7D%0Aa%2Eanchor%2Dsection%3A%3Abefore%20%7Bcontent%3A%20%27%23%27%3B%7D%0A%2EhasAnchor%3Ahover%20a%2Eanchor%2Dsection%20%7Bvisibility%3A%20visible%3B%7D%0A" rel="stylesheet" />
+<script src="data:application/x-javascript;base64,Ly8gQW5jaG9yIHNlY3Rpb25zIHYxLjAgd3JpdHRlbiBieSBBdHN1c2hpIFlhc3Vtb3RvIG9uIE9jdCAzcmQsIDIwMjAuCmRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ0RPTUNvbnRlbnRMb2FkZWQnLCBmdW5jdGlvbigpIHsKICAvLyBEbyBub3RoaW5nIGlmIEFuY2hvckpTIGlzIHVzZWQKICBpZiAodHlwZW9mIHdpbmRvdy5hbmNob3JzID09PSAnb2JqZWN0JyAmJiBhbmNob3JzLmhhc093blByb3BlcnR5KCdoYXNBbmNob3JKU0xpbmsnKSkgewogICAgcmV0dXJuOwogIH0KCiAgY29uc3QgaCA9IGRvY3VtZW50LnF1ZXJ5U2VsZWN0b3JBbGwoJ2gxLCBoMiwgaDMsIGg0LCBoNSwgaDYnKTsKCiAgLy8gRG8gbm90aGluZyBpZiBzZWN0aW9ucyBhcmUgYWxyZWFkeSBhbmNob3JlZAogIGlmIChBcnJheS5mcm9tKGgpLnNvbWUoeCA9PiB4LmNsYXNzTGlzdC5jb250YWlucygnaGFzQW5jaG9yJykpKSB7CiAgICByZXR1cm4gbnVsbDsKICB9CgogIC8vIFVzZSBzZWN0aW9uIGlkIHdoZW4gcGFuZG9jIHJ1bnMgd2l0aCAtLXNlY3Rpb24tZGl2cwogIGNvbnN0IHNlY3Rpb25faWQgPSBmdW5jdGlvbih4KSB7CiAgICByZXR1cm4gKCh4LmNsYXNzTGlzdC5jb250YWlucygnc2VjdGlvbicpIHx8ICh4LnRhZ05hbWUgPT09ICdTRUNUSU9OJykpCiAgICAgICAgICAgID8geC5pZCA6ICcnKTsKICB9OwoKICAvLyBBZGQgYW5jaG9ycwogIGguZm9yRWFjaChmdW5jdGlvbih4KSB7CiAgICBjb25zdCBpZCA9IHguaWQgfHwgc2VjdGlvbl9pZCh4LnBhcmVudEVsZW1lbnQpOwogICAgaWYgKGlkID09PSAnJykgewogICAgICByZXR1cm4gbnVsbDsKICAgIH0KICAgIGxldCBhbmNob3IgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdhJyk7CiAgICBhbmNob3IuaHJlZiA9ICcjJyArIGlkOwogICAgYW5jaG9yLmNsYXNzTGlzdCA9IFsnYW5jaG9yLXNlY3Rpb24nXTsKICAgIHguY2xhc3NMaXN0LmFkZCgnaGFzQW5jaG9yJyk7CiAgICB4LmFwcGVuZENoaWxkKGFuY2hvcik7CiAgfSk7Cn0pOwo="></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -24,41 +26,6 @@
   div.column{display: inline-block; vertical-align: top; width: 50%;}
   div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
   ul.task-list{list-style: none;}
-      div.sourceCode { overflow-x: auto; }
-  table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-    margin: 0; padding: 0; vertical-align: baseline; border: none; }
-  table.sourceCode { width: 100%; line-height: 100%; }
-  td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-  td.sourceCode { padding-left: 5px; }
-  code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-  code > span.dt { color: #902000; } /* DataType */
-  code > span.dv { color: #40a070; } /* DecVal */
-  code > span.bn { color: #40a070; } /* BaseN */
-  code > span.fl { color: #40a070; } /* Float */
-  code > span.ch { color: #4070a0; } /* Char */
-  code > span.st { color: #4070a0; } /* String */
-  code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-  code > span.ot { color: #007020; } /* Other */
-  code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-  code > span.fu { color: #06287e; } /* Function */
-  code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-  code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-  code > span.cn { color: #880000; } /* Constant */
-  code > span.sc { color: #4070a0; } /* SpecialChar */
-  code > span.vs { color: #4070a0; } /* VerbatimString */
-  code > span.ss { color: #bb6688; } /* SpecialString */
-  code > span.im { } /* Import */
-  code > span.va { color: #19177c; } /* Variable */
-  code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-  code > span.op { color: #666666; } /* Operator */
-  code > span.bu { } /* BuiltIn */
-  code > span.ex { } /* Extension */
-  code > span.pp { color: #bc7a00; } /* Preprocessor */
-  code > span.at { color: #7d9029; } /* Attribute */
-  code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-  code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-  code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-  code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
     </style>
 
 
@@ -139,7 +106,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <h1 class="title toc-ignore">Opal R Session API</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2020-11-03</h4>
+<h4 class="date">2020-12-16</h4>
 
 
 
