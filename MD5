@@ -1,4 +1,4 @@
-36baf073380b1d1070c46ce0ce02046a *DESCRIPTION
+41e98e3e8f5bd9834fe025521f463e40 *DESCRIPTION
 8647257ce40c1da65c8a9206d36aeb33 *NAMESPACE
 9eb2d16c1e43183f6ed954a31ffa1de1 *R/datashield.admin.r
 10b9551d19aa602882579a5697be0f81 *R/dictionary.R
@@ -15,7 +15,7 @@ ac80048ede209b60cc058a7bbafc27b1 *R/opal.project.r
 5a2e2091f122987197c873d220b47834 *R/opal.report.r
 e60ed9a13b85af27fd44e6d3fec900eb *R/opal.resource.r
 3f434547639af0c3280eb7da3a11870b *R/opal.symbol.r
-480880c62d9067f9e094a76d9bb9f748 *R/opal.table.R
+7cf5d2f549e9656ba2304472729bedf7 *R/opal.table.R
 9d4f2b76ec77368038112c9755857325 *R/opal.task.r
 cec6e755900c47f5ee8704acf8c152f0 *R/opal.taxonomy.r
 1f3990377ddd97d7cd3b09893ab78790 *R/opal.workspace.r
@@ -24,13 +24,13 @@ d7e9802620050f32980f79f7068f9144 *R/utils.r
 c7c7bf1320ce29edd0c5695d538e9dfa *build/vignette.rds
 74645fe962c4f225d4743618d8e3a61a *inst/doc/opal-files.R
 9ddb447c8feb79bda31488fb4ae4d795 *inst/doc/opal-files.Rmd
-73c3c05cbb7ab0dbcf4309063f8eaadb *inst/doc/opal-files.html
+10d360ac78e06b2bb99d80baf4323129 *inst/doc/opal-files.html
 10d7aa7b54f8fd67d8c5815d4a5e1b83 *inst/doc/opal-projects.R
 a5116df7ae4a464b338e2ed1dec422f3 *inst/doc/opal-projects.Rmd
-712dd0f5799bb1ce9a8bd4c594e4285a *inst/doc/opal-projects.html
+0e803e359414566e47d455b91187d354 *inst/doc/opal-projects.html
 eefcca0c12102ad4adeec170e96d5759 *inst/doc/opal-rsession.R
 bc773d506416d4fab9a578b5a4a125f7 *inst/doc/opal-rsession.Rmd
-0299cb926ea9186c52554da08cb0ba82 *inst/doc/opal-rsession.html
+430641cea014d702cb41f2ba6feacf03 *inst/doc/opal-rsession.html
 24ef39b01185abba757024260522348f *inst/examples/opal-commands.R
 569346f1851f206f68bab340e053be30 *inst/examples/opal-datasources.R
 03e5e5085d34367a4262c741a3d147f5 *inst/examples/opal-login-certificate.R
