@@ -182,9 +182,13 @@ dictionary.inspect <- function(tibble, id.name = 'id', warn = TRUE) {
   if (!(id.name %in% colnames(tibble))) {
     stop("No identifiers column with name '", id.name, "'", call. = FALSE)
   }
+  # check for non missing ID values, mandatory
+  if (!all(sapply(tibble[[id.name]], function(id) !(is.null(id) || is.na(id) || nchar(as.character(id)) == 0)))) {
+    stop("Some identifiers are missing in column '", id.name, "'", call. = FALSE)
+  }
   rval <- TRUE
   # check whether it is a multilines dataset
-  if (length(unique(tibble[[id.name]]) < nrow(tibble))) {
+  if (length(unique(tibble[[id.name]])) < nrow(tibble)) {
     for (n in colnames(tibble)) {
       if (n != id.name) {
         attrs <- attributes(tibble[[n]])

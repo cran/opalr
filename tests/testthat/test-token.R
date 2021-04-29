@@ -1,0 +1,123 @@
+test_that("Token Datashield creation", {
+  check_skip()
+  #skip("Temporary skip")
+  
+  o <- opal.login("administrator", "password")
+  name <- "ds-xxx"
+  opal.token_delete(o, name)
+  val <- opal.token_datashield_create(o, name, projects = c("CNSIM", "DASIM"))
+  expect_true(nchar(val) == 32)
+  expect_error(opal.token_datashield_create(o, name))
+  tk <- opal.token(o, name)
+  expect_length(tk$projects, 2)
+  expect_true("CNSIM" %in% tk$projects)
+  expect_true("DASIM" %in% tk$projects)
+  expect_equal(tk$access, 'READ_NO_VALUES')
+  expect_null(tk$commands)
+  expect_true(tk$useDatashield)
+  expect_false(tk$useR)
+  expect_false(tk$useSQL)
+  opal.logout(o)
+  
+  # use token
+  o <- opal.login(token = val)
+  df <- opal.projects(o)
+  expect_length(df$name, 2)
+  expect_true("CNSIM" %in% df$name)
+  expect_true("DASIM" %in% df$name)
+  expect_equal(nrow(opal.file_ls(o, "/projects/CNSIM")), 0)
+  expect_error(opal.file_mkdir(o, "/projects/CNSIM/x"))
+  expect_error(opal.assign.table(o, "D", "CNSIM.CNSIM1"))
+  expect_error(opal.table_get(o, "CNSIM", "CNSIM1"))
+  expect_error(opal.valueset(o, "CNSIM", "CNSIM1", "1000"))
+  opal.logout(o)
+  
+  # clean up
+  o <- opal.login("administrator", "password")
+  opal.token_delete(o, name)
+  expect_null(opal.token(o, name))
+  opal.logout(o)
+})
+
+test_that("Token R creation", {
+  check_skip()
+  #skip("Temporary skip")
+  
+  o <- opal.login("administrator", "password")
+  name <- "r-xxx"
+  opal.token_delete(o, name)
+  val <- opal.token_r_create(o, name, access = 'READ')
+  expect_true(nchar(val) == 32)
+  expect_error(opal.token_r_create(o, name))
+  tk <- opal.token(o, name)
+  expect_equal(tk$commands, list('export'))
+  expect_false(tk$useDatashield)
+  expect_true(tk$useR)
+  expect_false(tk$useSQL)
+  opal.logout(o)
+  
+  # use token
+  o <- opal.login(token = val)
+  df <- opal.projects(o)
+  expect_true(length(df$name)>0)
+  expect_true("CNSIM" %in% df$name)
+  expect_true("DASIM" %in% df$name)
+  expect_equal(nrow(opal.file_ls(o, "/projects/CNSIM")), 0)
+  expect_error(opal.file_mkdir(o, "/projects/CNSIM/x"))
+  opal.assign.table(o, "D", "CNSIM.CNSIM1")
+  expect_equal(opal.symbols(o), "D")
+  df <- opal.table_get(o, "CNSIM", "CNSIM1")
+  expect_true(nrow(df)>0)
+  expect_length(opal.valueset(o, "CNSIM", "CNSIM1", "1000"), 11)
+  wsid <- opal.workspace_save(o)
+  df <- opal.workspaces(o)
+  expect_true(nrow(df)>0)
+  expect_true(wsid %in% df$name)
+  opal.workspace_rm(o, wsid)
+  opal.logout(o)
+  
+  # clean up
+  o <- opal.login("administrator", "password")
+  opal.token_delete(o, name)
+  expect_null(opal.token(o, name))
+  opal.logout(o)
+})
+
+test_that("Token SQL creation", {
+  check_skip()
+  #skip("Temporary skip")
+  o <- opal.login("administrator", "password")
+  
+  name <- "sql-xxx"
+  opal.token_delete(o, name)
+  val <- opal.token_sql_create(o, name)
+  expect_true(nchar(val) == 32)
+  expect_error(opal.token_sql_create(o, name))
+  tk <- opal.token(o, name)
+  expect_null(tk$commands)
+  expect_false(tk$useDatashield)
+  expect_false(tk$useR)
+  expect_true(tk$useSQL)
+  opal.logout(o)
+  
+  # use token
+  o <- opal.login(token = val)
+  df <- opal.projects(o)
+  expect_true(length(df$name)>0)
+  expect_true("CNSIM" %in% df$name)
+  expect_true("DASIM" %in% df$name)
+  expect_equal(nrow(opal.file_ls(o, "/projects/CNSIM")), 0)
+  expect_error(opal.file_mkdir(o, "/projects/CNSIM/x"))
+  expect_error(opal.assign.table(o, "D", "CNSIM.CNSIM1"))
+  expect_error(opal.table_get(o, "CNSIM", "CNSIM1"))
+  expect_length(opal.valueset(o, "CNSIM", "CNSIM1", "1000"), 11)
+  df <- opal.sql(o, "select count(*) from CNSIM1", "CNSIM")
+  expect_true(nrow(df) == 1)
+  opal.logout(o)
+  
+  # clean up
+  o <- opal.login("administrator", "password")
+  opal.token_delete(o, name)
+  expect_null(opal.token(o, name))
+  opal.logout(o)
+})

@@ -405,3 +405,4 @@ opal.tables_perm_delete <- function(opal, project, subject, type = "user") {
     ignore <- opal.delete(opal, "project", project, "permissions", "datasource", query = list(principal = subject[i], type = toupper(type)))  
   }
 }
+
