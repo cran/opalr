@@ -1,5 +1,5 @@
 Package: opalr
-Version: 2.1.0
+Version: 2.1.1
 Title: 'Opal' Data Repository Client and 'DataSHIELD' Utils
 Authors@R: 
     c(person(given = "Yannick",
@@ -36,10 +36,10 @@ RoxygenNote: 7.1.1
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2021-04-29 15:31:55 UTC; yannick
+Packaged: 2021-05-31 08:50:09 UTC; yannick
 Author: Yannick Marcon [aut, cre] (<https://orcid.org/0000-0003-0138-2023>),
   Amadou Gaye [ctb] (<https://orcid.org/0000-0002-1180-2792>),
   OBiBa group [cph]
 Maintainer: Yannick Marcon <yannick.marcon@obiba.org>
 Repository: CRAN
-Date/Publication: 2021-04-29 16:20:02 UTC
+Date/Publication: 2021-05-31 09:20:02 UTC
