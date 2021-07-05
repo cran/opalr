@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2020 OBiBa. All rights reserved.
+# Copyright (c) 2021 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -77,16 +77,28 @@ opal.file_download <- function(opal, source, destination=NULL, key=NULL) {
   }
 }
 
-#' Upload a file
+#' Upload a file or a folder
 #' 
-#' Upload a file into the Opal file system.
+#' Upload a file or a folder into the Opal file system. Creates the destination folder (and parents)
+#' when necessary. Hidden files and folders (with name starting with dot) can be excluded.
 #' 
 #' @family file functions
 #' @param opal Opal object.
 #' @param source Path to the file in the local file system.
-#' @param destination Path of the destination folder in the Opal file system.
+#' @param destination Path of the destination folder in the Opal file system. Folder (and parents) will be created if missing.
+#' @param all.files	When FALSE, upload only visible files (following Unix-style visibility, that is files whose name 
+#' does not start with a dot). Default is TRUE.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # upload a file
+#' opal.file_upload(o, 'some_data.csv', '/home/administrator')
+#' # upload a folder
+#' opal.file_upload(o, 'some_data', '/home/administrator')
+#' opal.logout(o)
+#' }
 #' @export
-opal.file_upload <- function(opal, source, destination) {
+opal.file_upload <- function(opal, source, destination, all.files = TRUE) {
   if (!file.exists(source)) {
     stop("Source file does not exist")
   }
@@ -102,7 +114,7 @@ opal.file_upload <- function(opal, source, destination) {
   if (file.info(source)$isdir) {
     sourceDir <- normalizePath(source)
     parentDir <- dirname(sourceDir)
-    pb <- .newProgress(total = 2 + length(list.files(sourceDir, recursive = TRUE, include.dirs = TRUE, all.files = TRUE)))
+    pb <- .newProgress(total = 2 + length(list.files(sourceDir, recursive = TRUE, include.dirs = TRUE, all.files = all.files)))
     # split path into segments, excluding '.'
     split_path <- function(x) {
       if (dirname(x) == x) x
@@ -118,20 +130,22 @@ opal.file_upload <- function(opal, source, destination) {
     lapply(list.dirs(sourceDir, recursive = TRUE), function(d) {
       # check for dots in relative directory
       rd <- substring(d, first = nchar(parentDir) + 2)
-      # make opal directory
-      od <- paste0(destination, "/", rd)
-      .tickProgress(pb, tokens = list(what = paste0("Make directory ", od)))
-      opal.file_mkdir(opal, od, parents = TRUE)
-      # upload regular files from local directory
-      lapply(list.files(d, full.names = TRUE, all.files = TRUE), function(f) {
-        if (!file.info(f)$isdir) {
-          .tickProgress(pb, tokens = list(what = paste0("Upload file ", f)))
-          doUploadFile(f, od)
-        }
-      })
+      if (all.files || !any(startsWith(split_path(rd), "."))) {
+        # make opal directory
+        od <- paste0(destination, "/", rd)
+        .tickProgress(pb, tokens = list(what = paste0("Make directory ", od)))
+        opal.file_mkdir(opal, od, parents = TRUE)
+        # upload regular files from local directory
+        lapply(list.files(d, full.names = TRUE, all.files = all.files), function(f) {
+          if (!file.info(f)$isdir) {
+            .tickProgress(pb, tokens = list(what = paste0("Upload file ", f)))
+            doUploadFile(f, od)
+          }
+        })
+      }
     })
     ignore <- .tickProgress(pb, tokens = list(what = paste0("Uploaded: ", source)))
-  } else {
+  } else if (all.files || !startsWith(basename(normalizePath(source)), ".")) {
     opal.file_mkdir(opal, destination, parents = TRUE)
     doUploadFile(source, destination)
   }
@@ -397,4 +411,37 @@ opal.file_read <- function(opal, source, destination) {
   }
   ignore <- .getRSessionId(opal)
   res <- opal.put(opal, "r", "session", opal$rid, "file", "_pull", query=query)
+}
+
+#' Unzip a zip archive file
+#'
+#' Unzip a zip archive file from the Opal file system.
+#'
+#' @family file functions
+#' @param opal Opal object.
+#' @param source Path to the file in the Opal file system (must exist and have the ".zip" file extension).
+#' @param destination Path to the destination file or folder in the Opal file system.
+#' @param key Key to decrypt archive.
+#' @return The path of the extracted archive folder in the Opal file system.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # unzip
+#' path <- opal.file_unzip(o, "/tmp/TESTING.zip", "/home/administrator")
+#' opal.logout(o)
+#' }
+#' @export
+opal.file_unzip <- function(opal, source, destination, key=NULL) {
+  if (opal.version_compare(opal,"4.2")<0) {
+    stop("Zip archive extraction requires Opal 4.2 or higher.")
+  }
+  query <- list(action = "unzip", destination = destination)
+
+  if (!is.null(key)) {
+    query["key"] <- key
+  }
+
+  location <- append("files", strsplit(substring(source, 2), "/")[[1]])
+  res <- opal.post(opal, location, query=query, contentType = "application/json")
+  res$path
 }

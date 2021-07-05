@@ -2,7 +2,7 @@
 % Please edit documentation in R/opal.admin.R
 \name{oadmin.perm_add}
 \alias{oadmin.perm_add}
-\title{Add or update a R permission}
+\title{Add or update a R permission (deprecated)}
 \usage{
 oadmin.perm_add(opal, subject, type = "user", permission)
 }
@@ -16,14 +16,14 @@ oadmin.perm_add(opal, subject, type = "user", permission)
 \item{permission}{The permission to apply: use.}
 }
 \description{
-Add or update a permission on the R service.
+Deprecated, use \link{oadmin.r_perm_add}.
 }
 \examples{
 \dontrun{
 o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
-oadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
-oadmin.perm(o)
-oadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+oadmin.r_perm(o)
+oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
 opal.logout(o)
 }
 }

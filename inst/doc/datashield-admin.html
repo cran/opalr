@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Yannick Marcon" />
+
+<meta name="date" content="2021-07-05" />
+
+<title>DataSHIELD Administration</title>
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">DataSHIELD Administration</h1>
+<h4 class="author">Yannick Marcon</h4>
+<h4 class="date">2021-07-05</h4>
+
+
+
+<p><a href="https://www.obiba.org/pages/products/opal/">Opal</a> is the reference implementation of the <a href="https://datashield.org/">DataSHIELD</a> infrastructure. All the DataSHIELD administration tasks can be performed programmatically using functions starting with <code>dsadmin.*</code>:</p>
+<ul>
+<li>DataSHIELD R packages management,</li>
+<li>creation and initialization of a DataSHIELD profile,</li>
+<li>DataSHIELD profile settings management,</li>
+<li>user and permissions management.</li>
+</ul>
+<p>See also the <a href="https://opaldoc.obiba.org/en/latest/web-user-guide/administration/datashield.html">Opal DataSHIELD Administration documentation</a> to learn how to administrate DataSHIELD using the graphical user interface.</p>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<p>Setup the connection with Opal:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(opalr)
+o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</code></pre></div>
+</div>
+<div id="r-packages" class="section level2">
+<h2>R Packages</h2>
+<p>Opal can handle clusters of R servers. R packages are handled at the cluster level (because all the R servers in a cluster are expected to be identical). See <a href="https://opaldoc.obiba.org/en/latest/admin/rserver.html">Opal and R server documentation</a>.</p>
+<p>List installed DataSHIELD R packages:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.package_descriptions</span>(o, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</code></pre></div>
+<p>Install a DataSHIELD R package from the configured CRAN repositories (most likely the <a href="https://cran.datashield.org/">DataSHIELD repo</a>):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.install_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsBase&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</code></pre></div>
+<p>R packages which source code is one GitHub can be installed directly:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.install_github_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">username =</span> <span class="st">&quot;neelsoumya&quot;</span>, <span class="dt">ref =</span> <span class="st">&quot;v1.0.0&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</code></pre></div>
+<p>When developing a new DataSHIELD R package, it can be built and installed as follow (from the root of the R package source directory):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.install_local_package</span>(o, devtools<span class="op">::</span><span class="kw">build</span>(), <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</code></pre></div>
+<p>To remove a DataSHIELD R package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.remove_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</code></pre></div>
+<p>Note that removing a package does not update the DataSHIELD settings of the associated profiles. See the following sections to administrate the profiles and their settings.</p>
+</div>
+<div id="profiles" class="section level2">
+<h2>Profiles</h2>
+<p>A DataSHIELD profile is based on a R servers cluster. In the most simple setup, there is only one cluster of one R server and this cluster is called <code>default</code>, and the profile is named the same.</p>
+<p>It is possible to define several profiles based on the same cluster. The benefit of doing this is to:</p>
+<ul>
+<li>have different configurations (allowed aggregate and assigned functions, and R option values),</li>
+<li>restrict access to some users/groups.</li>
+</ul>
+<p>To list the DataSHIELD profiles:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.profiles</span>(o)</code></pre></div>
+<p>To create a new DataSHIELD profile, to initialize it the DataSHIELD settings as declared by the installed packages and to enable it, use the following.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># ensure the profile does not exist</span>
+<span class="cf">if</span> (<span class="kw">dsadmin.profile_exists</span>(o, <span class="st">&quot;demo&quot;</span>))
+  <span class="kw">dsadmin.profile_delete</span>(o, <span class="st">&quot;demo&quot;</span>)
+<span class="co"># create a profile, disabled</span>
+<span class="kw">dsadmin.profile_create</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">cluster =</span> <span class="st">&quot;default&quot;</span>)
+<span class="co"># make only dsBase and resourcer packages visible</span>
+<span class="kw">dsadmin.profile_init</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">packages =</span> <span class="kw">c</span>(<span class="st">&quot;dsBase&quot;</span>, <span class="st">&quot;resourcer&quot;</span>))
+<span class="co"># ready to be used</span>
+<span class="kw">dsadmin.profile_enable</span>(o, <span class="st">&quot;demo&quot;</span>)</code></pre></div>
+<p>When a DataSHIELD R package is installed but should be used only by a restricted group of users, proceed as follow:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.profile_perm_add</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;testers&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>)
+<span class="co"># verify permissions</span>
+<span class="kw">dsadmin.profile_perm</span>(o, <span class="st">&quot;demo&quot;</span>)</code></pre></div>
+</div>
+<div id="settings" class="section level2">
+<h2>Settings</h2>
+<p>The DataSHIELD settings are defined per profile (DataSHIELD Profiles section). The settings can be minimally initialized by reading the declared settings from the installed DataSHIELD R packages. They can also be amended afterwards.</p>
+<div id="methods" class="section level3">
+<h3>Methods</h3>
+<p>The DataSHIELD methods define the allowed function calls and their mapping to a server side function call.</p>
+<p>To list the aggregation functions:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.get_methods</span>(o, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</code></pre></div>
+<p>Fully custom settings can be defined (useful for developers).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.set_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">func =</span> <span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)
+<span class="co"># verfiy custom method </span>
+<span class="kw">dsadmin.get_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</code></pre></div>
+<p>A simple test of our custom <code>hello()</code> function would be:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(DSOpal)
+builder &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">newDSLoginBuilder</span>()
+builder<span class="op">$</span><span class="kw">append</span>(<span class="dt">server =</span> <span class="st">&quot;study1&quot;</span>,  <span class="dt">url =</span> <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>,
+               <span class="dt">user =</span> <span class="st">&quot;administrator&quot;</span>, <span class="dt">password =</span> <span class="st">&quot;password&quot;</span>,
+               <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)
+logindata &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">build</span>()
+conns &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">datashield.login</span>(<span class="dt">logins =</span> logindata)
+<span class="co"># call the hello() function on the R server</span>
+<span class="kw">datashield.aggregate</span>(conns, <span class="dt">expr =</span> <span class="kw">quote</span>(<span class="kw">hello</span>(<span class="st">'friends'</span>)))
+<span class="kw">datashield.logout</span>(conns)</code></pre></div>
+</div>
+<div id="options" class="section level3">
+<h3>Options</h3>
+<p>The DataSHIELD R options affects the behaviour of some methods.</p>
+<p>To modify an R option:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.set_option</span>(o, <span class="st">&quot;datashield.privacyLevel&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)
+<span class="co"># verify options</span>
+<span class="kw">dsadmin.get_options</span>(o, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</code></pre></div>
+</div>
+<div id="r-parser" class="section level3">
+<h3>R Parser</h3>
+<p>An advanced setting, mostly for backward compatibility issues, is the possibility to chose which R parser should be used by Opal when validating the submitted R code (remember that only a subset of the R language is allowed). See <a href="https://github.com/obiba/datashield4j/blob/master/README.md">datashield4j library documentation</a> for possible values.</p>
+<p>To set the legacy R parser:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.profile_rparser</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">rParser =</span> <span class="st">&quot;v1&quot;</span>)</code></pre></div>
+</div>
+</div>
+<div id="users-and-permissions" class="section level2">
+<h2>Users and Permissions</h2>
+<p>The DataSHIELD requires permissions: permissions to access the data (whether these are in a table or a resource) and permission to use the DataSHIELD service.</p>
+<div id="users" class="section level3">
+<h3>Users</h3>
+<p>To facilitate permissions maintenance, create users in appropriate group(s). Groups can represent data access and DataSHIELD service access.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span> (<span class="kw">oadmin.user_exists</span>(o, <span class="st">&quot;userx&quot;</span>))
+  <span class="kw">oadmin.user_delete</span>(o, <span class="st">&quot;userx&quot;</span>)
+<span class="co"># generated password</span>
+password &lt;-<span class="st"> </span><span class="kw">oadmin.user_add</span>(o, <span class="st">&quot;userx&quot;</span>, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;demo&quot;</span>, <span class="st">&quot;datashield&quot;</span>))
+<span class="co"># verify user</span>
+<span class="kw">subset</span>(<span class="kw">oadmin.users</span>(o), name <span class="op">==</span><span class="st"> &quot;userx&quot;</span>)</code></pre></div>
+</div>
+<div id="permissions" class="section level3">
+<h3>Permissions</h3>
+<p>To set some DataSHIELD-compatible permissions (view without accessing individual-level data) to each tables of a project, use the following:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">lapply</span>(<span class="kw">opal.tables</span>(o, <span class="st">&quot;CNSIM&quot;</span>)<span class="op">$</span>name, <span class="cf">function</span>(table) {
+  <span class="kw">opal.table_perm_add</span>(o, <span class="st">&quot;CNSIM&quot;</span>, table, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)
+})
+<span class="co"># verify table permissions</span>
+<span class="kw">opal.table_perm</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)</code></pre></div>
+<p>Similarly, permissions to use all the resources of a project in a DataSHIELD context is even simpler:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.resources_perm_add</span>(o, <span class="st">&quot;RSRC&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)
+<span class="co"># verify permissions</span>
+<span class="kw">opal.resources_perm</span>(o, <span class="st">&quot;RSRC&quot;</span>)</code></pre></div>
+<p>Then grant permission to use the DataSHIELD service to a group of users:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dsadmin.perm_add</span>(o, <span class="dt">subject =</span> <span class="st">&quot;datashield&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;use&quot;</span>)
+<span class="co"># verify permissions</span>
+<span class="kw">dsadmin.perm</span>(o)</code></pre></div>
+<p>Note that it is also possible to grant permission to access a specific DataSHIELD profile (see Profiles section).</p>
+</div>
+</div>
+<div id="teardown" class="section level2">
+<h2>Teardown</h2>
+<p>Good practice is to free server resources by sending a logout request:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.logout</span>(o)</code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

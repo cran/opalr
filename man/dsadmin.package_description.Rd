@@ -4,14 +4,17 @@
 \alias{dsadmin.package_description}
 \title{Get DataSHIELD package description}
 \usage{
-dsadmin.package_description(opal, pkg, fields = NULL)
+dsadmin.package_description(opal, pkg, fields = NULL, profile = NULL)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
 
 \item{pkg}{Package name.}
 
-\item{fields}{A character vector giving the fields to extract from each package's DESCRIPTION file in addition to the default ones, or NULL (default). Unavailable fields result in NA values.}
+\item{fields}{A character vector giving the fields to extract from each package's
+DESCRIPTION file in addition to the default ones, or NULL (default). Unavailable fields result in NA values.}
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \description{
 Get DataSHIELD package description
@@ -33,13 +36,16 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.install_package}()},
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
 \code{\link{dsadmin.rm_method}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_option}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

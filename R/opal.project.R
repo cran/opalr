@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2020 OBiBa. All rights reserved.
+# Copyright (c) 2021 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -48,6 +48,24 @@ opal.projects <- function(opal, df=TRUE) {
   }
 }
 
+#' Get projects databases
+#' 
+#' When creating a project for storing data, it is required to name the database to be associated.
+#' 
+#' @family project functions
+#' @param opal Opal object.
+#' @return A character vector of databases names.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' opal.projects_databases(o)
+#' opal.logout(o)
+#' }
+#' @export
+opal.projects_databases <- function(opal) {
+  sapply(opal.get(opal, "system", "databases", query = list(usage = "storage")), function(db) db$name)
+}
+
 #' Get a project
 #' 
 #' @family project functions
@@ -70,7 +88,8 @@ opal.project <- function(opal, project) {
 #' @param opal Opal object.
 #' @param project Name of the project
 #' @param database The database name (as declared in Opal) to be used to store project's data. If not provided, the project
-#' can have views and resources but no raw tables. 
+#' can have views and resources but no raw tables. If the the value is a logical and is TRUE, the default database will be 
+#' selected or the first one if there is no default.
 #' @param title The title of the project (optional).
 #' @param description The description of the project (optional).
 #' @param tags A list of tag names (optional).
@@ -78,7 +97,12 @@ opal.project <- function(opal, project) {
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # with named database
 #' opal.project_create(o, 'test', database='opal_data', title='This is a test', tags=list('Test'))
+#' # with default database
+#' opal.project_create(o, 'test_default_db', database = TRUE)
+#' # no database, for views and resources only
+#' opal.project_create(o, 'test_no_db')
 #' opal.logout(o)
 #' }
 #' @export
@@ -86,8 +110,24 @@ opal.project_create <- function(opal, project, database = NULL, title = NULL, de
   if (!opal.project_exists(opal, project)) {
     # {"name":"test","title":"This is the title","description":"This is the description","database":"opal_data","vcfStoreService":null,"exportFolder":"/home/administrator/export","tags":["DataSHIELD,","Resources"]}
     projson <- list(name = project)
-    if (!is.null(database)) {
-      projson$database <- database
+    if (!.is.empty(database)) {
+      dbs <- opal.get(opal, "system", "databases", query = list(usage = "storage"))
+      dbNames <- sapply(dbs, function(db) db$name)
+      if (is.logical(database)) {
+        if (database && length(dbNames)>0) {
+          projson$database <- dbNames[1]
+          # apply default db, if there is any
+          lapply(dbs, function(db) {
+            if (db$defaultStorage)
+              projson$database <- db$name
+          })
+        }
+      } else {
+        if (!(database %in% dbNames)) {
+          stop("Not a valid project database name: '", database, "'. Expecting one of: '", paste0(dbNames, collapse = "', '"), "'")
+        }
+        projson$database <- database
+      }
     }
     if (!is.null(title)) {
       projson$title <- title
@@ -105,6 +145,17 @@ opal.project_create <- function(opal, project, database = NULL, title = NULL, de
     }
     body <- jsonlite::toJSON(projson, auto_unbox = TRUE)
     ignore <- opal.post(opal, "projects", contentType = "application/json", body = body)
+    if (!.is.empty(database)) {
+      pObj <- opal.project(opal, project)
+      waited <- 0
+      while(pObj$datasourceStatus != "READY") {
+        # delay is proportional to the time waited, but no more than 10s
+        delay <- min(10, max(1, round(waited/10)))
+        Sys.sleep(delay)
+        waited <- waited + delay
+        pObj <- opal.project(opal, project)
+      }
+    }
   } else {
     warning("Project ", project, " already exists.")
   }
@@ -155,6 +206,138 @@ opal.project_exists <- function(opal, project) {
   !is.null(res)
 }
 
+#' Backup a project
+#' 
+#' The project backup task has a limited scope: tables (dictionary and data export), 
+#' views (either as a logical table or as an exported table), resources, files and report 
+#' templates. Other project elements that are not part of the backup: user and group 
+#' permissions, view change history, table analysis, report executions etc.
+#'
+#' @param opal Opal object.
+#' @param project Name of the project.
+#' @param archive Archive directory path in the Opal file system. If folder (and parents) does not exist, it will be created.
+#' @param viewsAsTables Treat views as tables, i.e. export data instead of keeping derivation scripts. Default is FALSE.
+#' @param override Overwrite an existing backup folder. Default is TRUE.
+#' @param wait Wait for backup task completion. Default is TRUE.
+#' @return The project command ID if wait parameter is FALSE. See \link{opal.project_command} to retrieve asynchronous command state.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' opal.project_backup(o, 'GREENSPACE', '/home/administrator/backup/GREENSPACE')
+#' opal.file_download(o, '/home/administrator/backup/GREENSPACE', 'GREENSPACE.zip')
+#' opal.logout(o)
+#' }
+#' @export
+opal.project_backup <- function(opal, project, archive, viewsAsTables = FALSE, override = TRUE, wait=TRUE) {
+  params <- list(archive = archive, viewsAsTables = viewsAsTables, override = override)
+  location <- opal.post(opal, "project", project, "commands", "_backup", body = jsonlite::toJSON(params, auto_unbox = TRUE), contentType = "application/json", callback=.handleResponseLocation)
+  if (!is.null(location)) {
+    # /shell/command/<id>
+    task <- substring(location, 16)
+    if (wait) {
+      status <- 'NA'
+      waited <- 0
+      while(!is.element(status, c('SUCCEEDED','FAILED','CANCELED'))) {
+        # delay is proportional to the time waited, but no more than 10s
+        delay <- min(10, max(1, round(waited/10)))
+        Sys.sleep(delay)
+        waited <- waited + delay
+        command <- opal.project_command(opal, project, task)
+        status <- command$status
+      }
+      if (is.element(status, c('FAILED','CANCELED'))) {
+        stop(paste0('Backup of "', project, '" ended with status: ', status, '. Messages: \n', 
+                    paste0(sapply(command$messages, function(m) paste("> ", trimws(m$msg))), collapse = "\n")), call.=FALSE)
+      }
+    } else {
+      # returns the task ID so that task completion can be followed
+      task
+    }
+  } else {
+    # not supposed to be here
+    location
+  }
+}
+
+#' Restore a project
+#' 
+#' Restore the data of a project from a backup archive file to be found on the Opal file system. 
+#' The destination project must exist and can have a name different from the original one 
+#' (beware that this could break views). Default behavior is to stop when an item to restore 
+#' already exist (override can be forced).
+#'
+#' @param opal Opal object.
+#' @param project Name of the project.
+#' @param archive Archive directory or zip file path in the Opal file system.
+#' @param key Archive zip file password (if applies).
+#' @param override Overwrite existing items (table, view, resource, report). Project files override is not checked. Default is TRUE.
+#' @param wait Wait for restore task completion. Default is TRUE.
+#' @return The project command ID if wait parameter is FALSE. See \link{opal.project_command} to retrieve asynchronous command state.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # create the project to restore, with the default database (to store tables)
+#' opal.project_create(o, 'GREENSPACE2', database = TRUE)
+#' # upload backup zip and launch restore task
+#' opal.file_upload(o, 'GREENSPACE.zip', '/home/administrator')
+#' opal.project_restore(o, 'GREENSPACE2', '/home/administrator/GREENSPACE.zip')
+#' opal.logout(o)
+#' }
+#' @export
+opal.project_restore <- function(opal, project, archive, key = NULL, override = TRUE, wait=TRUE) {
+  params <- list(archive = archive, override = override)
+  if (!.is.empty(key)) {
+    params["password"] <- key
+  }
+  location <- opal.post(opal, "project", project, "commands", "_restore", body = jsonlite::toJSON(params, auto_unbox = TRUE), contentType = "application/json", callback=.handleResponseLocation)
+  if (!is.null(location)) {
+    # /shell/command/<id>
+    task <- substring(location, 16)
+    if (wait) {
+      status <- 'NA'
+      waited <- 0
+      while(!is.element(status, c('SUCCEEDED','FAILED','CANCELED'))) {
+        # delay is proportional to the time waited, but no more than 10s
+        delay <- min(10, max(1, round(waited/10)))
+        Sys.sleep(delay)
+        waited <- waited + delay
+        command <- opal.project_command(opal, project, task)
+        status <- command$status
+      }
+      if (is.element(status, c('FAILED','CANCELED'))) {
+        stop(paste0('Restore of "', project, '" ended with status: ', status, '. Messages: \n', 
+                    paste0(sapply(command$messages, function(m) paste("> ", trimws(m$msg))), collapse = "\n")), call.=FALSE)
+      }
+    } else {
+      # returns the task ID so that task completion can be followed
+      task
+    }
+  } else {
+    # not supposed to be here
+    location
+  }
+}
+
+#' Get project task
+#' 
+#' Get the project's task command object.
+#' 
+#' @param opal Opal object.
+#' @param project Name of the project.
+#' @param id The project command ID.
+#' @return The command state object.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' id <- opal.project_backup(o, 'GREENSPACE', '/home/administrator/backup/GREENSPACE', wait = FALSE)
+#' opal.project_command(opal, 'GREENSPACE', id)
+#' opal.logout(o)
+#' }
+#' @export
+opal.project_command <- function(opal, project, id) {
+  opal.get(opal, "project", project, "command", id)
+}
+
 #' Add or update a permission on a project
 #' 
 #' Add or update a permission on a project.
@@ -173,7 +356,7 @@ opal.project_exists <- function(opal, project) {
 #' opal.logout(o)
 #' }
 #' @export
-opal.project_perm_add <- function(opal, project, subject, type = "user", permission) {
+opal.project_perm_add <- function(opal, project, subject, type = "user", permission = "administrate") {
   if (!(tolower(type) %in% c("user", "group"))) {
     stop("Not a valid subject type: ", type)
   }

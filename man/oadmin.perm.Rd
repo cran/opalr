@@ -2,7 +2,7 @@
 % Please edit documentation in R/opal.admin.R
 \name{oadmin.perm}
 \alias{oadmin.perm}
-\title{Get the R permissions}
+\title{Get the R permissions (deprecated)}
 \usage{
 oadmin.perm(opal)
 }
@@ -13,14 +13,14 @@ oadmin.perm(opal)
 A data.frame with columns: subject, type, permission
 }
 \description{
-Get the permissions that were applied to the R service.
+Deprecated, use \link{oadmin.r_perm}.
 }
 \examples{
 \dontrun{
 o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
-oadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
-oadmin.perm(o)
-oadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+oadmin.r_perm(o)
+oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
 opal.logout(o)
 }
 }

@@ -4,15 +4,18 @@
 \alias{oadmin.install_local_package}
 \title{Install a package from a local archive file}
 \usage{
-oadmin.install_local_package(opal, path)
+oadmin.install_local_package(opal, path, profile = NULL)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
 
 \item{path}{Path to the package archive file.}
+
+\item{profile}{The R servers profile name to which operation applies. See also \link{opal.profiles}.}
 }
 \description{
 Install a package from a package archive file. This will upload the archive file and run its installation in the R server.
+The R server profile to which the operation applies is the one specified at login time.
 }
 \examples{
 \dontrun{
@@ -27,6 +30,7 @@ opal.logout(o)
 \seealso{
 Other administration functions: 
 \code{\link{oadmin.install_bioconductor_package}()},
+\code{\link{oadmin.install_cran_package}()},
 \code{\link{oadmin.install_devtools}()},
 \code{\link{oadmin.install_github_package}()},
 \code{\link{oadmin.install_package}()},

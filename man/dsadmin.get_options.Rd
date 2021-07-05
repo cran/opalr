@@ -4,10 +4,12 @@
 \alias{dsadmin.get_options}
 \title{Get the DataSHIELD options}
 \usage{
-dsadmin.get_options(opal)
+dsadmin.get_options(opal, profile = NULL)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \description{
 Get the DataSHIELD options
@@ -29,13 +31,16 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
 \code{\link{dsadmin.package_description}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
 \code{\link{dsadmin.rm_method}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_option}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

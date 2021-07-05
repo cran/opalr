@@ -4,12 +4,14 @@
 \alias{dsadmin.rm_option}
 \title{Remove a DataSHIELD option}
 \usage{
-dsadmin.rm_option(opal, name)
+dsadmin.rm_option(opal, name, profile = NULL)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
 
 \item{name}{Name of the option}
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \description{
 Remove a DataSHIELD option
@@ -32,12 +34,15 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
 \code{\link{dsadmin.package_description}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
 \code{\link{dsadmin.rm_method}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

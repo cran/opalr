@@ -1,15 +1,15 @@
 ---
-title: "Opal R Session API"
+title: "Opal R Session"
 author: "Yannick Marcon"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Opal R Session API}
+  %\VignetteIndexEntry{Opal R Session}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-[Opal](https://www.obiba.org/pages/products/opal/) is connected with a R server. Each Opal user having the appropriate permissions can create a R session on the server side through Opal. See the [R Server](http://opaldoc.obiba.org/en/latest/admin/rserver.html) documentation page that explains the relationship beteen Opal and the R server. The Opal R package exposes data management related functions:
+[Opal](https://www.obiba.org/pages/products/opal/) is connected with one or more R servers. Each Opal user having the appropriate permissions can create a R session on the server side through Opal. See the [R Server](http://opaldoc.obiba.org/en/latest/admin/rserver.html) documentation page that explains the relationship beteen Opal and the R servers. The Opal R package exposes data management related functions:
 
 * assignment of Opal data into the remote R session,
 * execution of R expressions on server side,
@@ -17,23 +17,39 @@ vignette: >
 
 Note that these functions do create a R session on the server side.
 
-Setup the connection with Opal:
+## Setup
+
+Setup the connection with Opal, specifying that the R server session must be created with the "default" profile, i.e. in the "default" R servers cluster (note that the profile parameter is optional):
 
 ```{r eval=FALSE}
 library(opalr)
-o <- opal.login("administrator", "password", "https://opal-demo.obiba.org")
+o <- opal.login("administrator", "password", "https://opal-demo.obiba.org", profile = "default")
 ```
+
+## Assign
 
 Assign a Opal table to a *data.frame* (if user has permission to see values of the Opal table):
 
 ```{r eval=FALSE}
-opal.assign.table(o, symbol = "df", value = "datashield.CNSIM1")
+opal.assign.table(o, symbol = "df", value = "CNSIM.CNSIM1")
 ```
 
-In place of a standard *data.frame*, Opal can assign data into a [tibble](https://tibble.tidyverse.org/) which has the advantage of containing the data dictionary:
+In place of a standard *data.frame*, Opal can assign data into a [tibble](https://tibble.tidyverse.org/):
 
 ```{r eval=FALSE}
-opal.assign.table.tibble(o, symbol = "tbl", value = "datashield.CNSIM1")
+opal.assign.table.tibble(o, symbol = "tbl", value = "CNSIM.CNSIM1")
+```
+
+Resource objects can be assigned to the R server session:
+
+```{r eval=FALSE}
+opal.assign.resource(o, symbol = "rsrc", value = "RSRC.CNSIM3")
+```
+
+An R expression can also be assigned to a symbol (use `quote()` to not interpret the expression in the client side R session). As an example assign a function body:
+
+```{r eval=FALSE}
+opal.assign.script(o, symbol = "hello", value = quote(function(x) { paste0("Hello ", x, "!") }))
 ```
 
 List the R symbols that lives in the remote R session:
@@ -41,26 +57,57 @@ List the R symbols that lives in the remote R session:
 ```{r eval=FALSE}
 opal.symbols(o)
 ```
+## Execute
 
 R expressions can be executed on the server side:
 
 ```{r eval=FALSE}
+# column names
 opal.execute(o, script = "names(tbl)")
+# get variable description from column attributes
+opal.execute(o, script = "attributes(tbl$GENDER)")
+# coerce resource to a data.frame and plot histogram of one column
+plot(opal.execute(o, script = "hist(as.data.frame(rsrc)$LAB_HDL)"))
+# execute the custom function
+opal.execute(o, script = "hello('friends')")
 ```
 
 The remote data can be downloaded into the client side R session:
 
 ```{r eval=FALSE}
-tbl <- opal.execute(o, script = "tbl")
+GENDER <- opal.execute(o, script = "tbl$GENDER")
 ```
+
+To execute more complex R code, use a local source file:
+
+```{r eval=FALSE}
+opal.execute.source(o, path = "/path/to/some_code.R")
+```
+
+## Files
+
+Files can be written from the Opal file system to the R server session folder:
+
+```{r eval=FALSE}
+opal.file_write(o, source = "/projects/CNSIM/CNSIM3.zip", "test.zip")
+```
+Similarly, files can be read from the R server session folder into the Opal file system:
+
+```{r eval=FALSE}
+opal.file_read(o, source = "test.zip", destination = "/tmp")
+```
+
+## Workspace
 
 The image of the remote R session can be saved in a *workspace* (to be restored at login time):
 
 ```{r eval=FALSE}
-opal.workspace_save(o, save="cnsim1")
+opal.workspace_save(o, save="demo")
 opal.workspaces(o)
 ```
 
+
+## Teardown
 
 Good practice is to free server resources by sending a logout request:
 

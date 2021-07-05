@@ -12,9 +12,9 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2021-05-31" />
+<meta name="date" content="2021-07-05" />
 
-<title>Opal Files API</title>
+<title>Opal Files</title>
 
 
 <style type="text/css">
@@ -110,19 +110,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Opal Files API</h1>
+<h1 class="title toc-ignore">Opal Files</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2021-05-31</h4>
+<h4 class="date">2021-07-05</h4>
 
 
 
 <p><a href="https://www.obiba.org/pages/products/opal/">Opal</a> has an internal file system that is accessible through web services. The Opal R package exposes files management related functions:</p>
 <ul>
-<li>upload a file,</li>
+<li>upload a file or folder,</li>
 <li>download a file or folder (optionaly encrypted),</li>
 <li>move or rename a file or folder,</li>
 <li>create a folder,</li>
 <li>remove a file or folder,</li>
+<li>unzip a zip file into a folder,</li>
 <li>write a file to the remote R session workspace,</li>
 <li>read a file from the remote R session workspace.</li>
 </ul>
@@ -130,37 +131,40 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(opalr)
 o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</code></pre></div>
 <p>Download a file:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/tmp/datashield.zip&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>)</code></pre></div>
 <p>Download a file, protected by a password:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/tmp/datashield.zip&quot;</span>, <span class="st">&quot;datashield-encrypted.zip&quot;</span>, <span class="dt">key=</span><span class="st">&quot;ABCDEFGHIJKL&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>, <span class="st">&quot;CNSIM-encrypted.zip&quot;</span>, <span class="dt">key=</span><span class="st">&quot;ABCDEFGHIJKL&quot;</span>)</code></pre></div>
 <p>Upload the file at another location:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_upload</span>(o, <span class="st">&quot;datashield.zip&quot;</span>, <span class="st">&quot;/projects/datashield&quot;</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_upload</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="st">&quot;/projects/CNSIM&quot;</span>)</code></pre></div>
 <p>Create a folder and list folder content:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fooDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/datashield/foo-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fooDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/foo-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))
 <span class="kw">opal.file_mkdir</span>(o, fooDir)
-<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/datashield&quot;</span>)</code></pre></div>
+<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</code></pre></div>
 <p>Move file to the new folder and list folder content:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_mv</span>(o, <span class="st">&quot;/projects/datashield/datashield.zip&quot;</span>, fooDir)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_mv</span>(o, <span class="st">&quot;/projects/CNSIM/CNSIM.zip&quot;</span>, fooDir)
 <span class="kw">opal.file_ls</span>(o, fooDir)</code></pre></div>
 <p>Rename the new folder and list folder content:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">barDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/datashield/bar-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">barDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/bar-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))
 <span class="kw">opal.file_mv</span>(o, fooDir, barDir)
-<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/datashield&quot;</span>)</code></pre></div>
+<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</code></pre></div>
+<p>Extract the content of the archive file into a folder:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">out &lt;-<span class="st"> </span><span class="kw">opal.file_unzip</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>), barDir)
+<span class="kw">opal.file_ls</span>(o, out)</code></pre></div>
 <p>Write a file from the Opal file system into the R server session workspace:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_write</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/datashield.zip&quot;</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_write</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>))
 <span class="kw">opal.execute</span>(o, <span class="st">&quot;list.files()&quot;</span>)</code></pre></div>
 <p>Read back the file into the Opal file system:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_read</span>(o, <span class="st">&quot;datashield.zip&quot;</span>, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/ds.zip&quot;</span>))
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_read</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/ds.zip&quot;</span>))
 <span class="kw">opal.file_ls</span>(o, barDir)</code></pre></div>
 <p>Remove created folder and list folder content:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">opal.file_rm</span>(o, barDir)
-<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/datashield&quot;</span>)</code></pre></div>
+<span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</code></pre></div>
 <p>Good practice is to free server resources by sending a logout request:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># clean server side</span>
 <span class="kw">opal.logout</span>(o)
 <span class="co"># clean client side</span>
-<span class="kw">unlink</span>(<span class="st">&quot;datashield-encrypted.zip&quot;</span>)
-<span class="kw">unlink</span>(<span class="st">&quot;datashield.zip&quot;</span>)</code></pre></div>
+<span class="kw">unlink</span>(<span class="st">&quot;CNSIM-encrypted.zip&quot;</span>)
+<span class="kw">unlink</span>(<span class="st">&quot;CNSIM.zip&quot;</span>)</code></pre></div>
 
 
 

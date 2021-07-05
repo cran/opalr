@@ -16,12 +16,13 @@ Clear the R sessions and logout from Opal(s).
 }
 \examples{
 \dontrun{
-o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+o <- opal.login('administrator','password', url = 'https://opal-demo.obiba.org')
 opal.logout(o)
 }
 }
 \seealso{
 Other connection functions: 
-\code{\link{opal.login}()}
+\code{\link{opal.login}()},
+\code{\link{opal.profiles}()}
 }
 \concept{connection functions}

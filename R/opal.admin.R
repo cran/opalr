@@ -1,5 +1,5 @@
 #-------------------------------------------------------------------------------
-# Copyright (c) 2020 OBiBa. All rights reserved.
+# Copyright (c) 2021 OBiBa. All rights reserved.
 #  
 # This program and the accompanying materials
 # are made available under the terms of the GNU Public License v3.0.
@@ -8,14 +8,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #-------------------------------------------------------------------------------
 
-#' Install package
+#' Install CRAN package
 #' 
-#' Install package if not already available in Opal(s). To install the latest version of a package, it has to be removed first.
+#' Install package from CRAN repos. To install the latest version of a package, it has to be removed first.
 #' 
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
 #' @param pkg Package name.
 #' @param repos Character vector, the base URLs of the repositories to use.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @return TRUE if successfully installed
 #' @examples 
 #' \dontrun{
@@ -24,24 +25,23 @@
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.install_package <- function(opal, pkg, repos=NULL) {
+oadmin.install_package <- function(opal, pkg, repos=NULL, profile = NULL) {
   if(is.list(opal)){
     lapply(opal, function(o){oadmin.install_package(o, pkg, repos)})
-  } else {
-    if (!oadmin.installed_package(opal, pkg)) {
-      # default repos
-      defaultrepos <- c(getOption("repos"), "http://cran.obiba.org", "http://cloud.r-project.org")
-      if (getOption("repos") != "@CRAN@") {
-        defaultrepos <- append(defaultrepos, getOption("repos"))
-      }
-      # append user provided ones
-      repostr <- paste('"', append(defaultrepos, repos),'"',collapse=',',sep='')
-      cmd <- paste('install.packages("', pkg, '", repos=c(', repostr ,'), dependencies=TRUE)', sep='')
-      resp <- opal.execute(opal, cmd, FALSE)
-      oadmin.installed_package(opal, pkg)
-    } else {
-      TRUE
+  } else if (opal.version_compare(opal, "4.0")<0) {
+    # default repos
+    defaultrepos <- c(getOption("repos"), "http://cran.obiba.org", "http://cloud.r-project.org")
+    if (getOption("repos") != "@CRAN@") {
+      defaultrepos <- append(defaultrepos, getOption("repos"))
     }
+    # append user provided ones
+    repostr <- paste('"', append(defaultrepos, repos),'"',collapse=',',sep='')
+    cmd <- paste('install.packages("', pkg, '", repos=c(', repostr ,'), dependencies=TRUE)', sep='')
+    resp <- opal.execute(opal, cmd, FALSE)
+    oadmin.installed_package(opal, pkg)
+  } else {
+    oadmin.install_cran_package(opal, pkg, profile = profile)
+    oadmin.installed_package(opal, pkg, profile = profile)
   }
 }
 
@@ -52,6 +52,7 @@ oadmin.install_package <- function(opal, pkg, repos=NULL) {
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
 #' @param pkg Package name.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -59,8 +60,13 @@ oadmin.install_package <- function(opal, pkg, repos=NULL) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.remove_package <- function(opal, pkg) {
-  ignore <- tryCatch(opal.execute(opal, paste('remove.packages("', pkg, '")', sep=''), FALSE), error=function(e){})
+oadmin.remove_package <- function(opal, pkg, profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    ignore <- tryCatch(opal.execute(opal, paste('remove.packages("', pkg, '")', sep=''), FALSE), error=function(e){})
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    ignore <- opal.delete(opal, "service", "r", "cluster", cluster, "package", pkg)
+  }
 }
 
 #' Check package is installed
@@ -68,6 +74,7 @@ oadmin.remove_package <- function(opal, pkg) {
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
 #' @param pkg Package name.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @return TRUE if installed
 #' @examples 
 #' \dontrun{
@@ -77,14 +84,23 @@ oadmin.remove_package <- function(opal, pkg) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.installed_package <- function(opal, pkg) {
-  opal.execute(opal, paste('require("', pkg, '", character.only=TRUE)', sep=''), FALSE)
+oadmin.installed_package <- function(opal, pkg, profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    opal.execute(opal, paste('require("', pkg, '", character.only=TRUE)', sep=''), FALSE)
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    dto <- tryCatch(opal.get(opal, "service", "r", "cluster", cluster, "package", pkg), error = function(e) { NULL })
+    !is.null(dto)
+  }
 }
 
 #' List installed packages
 #'
+#' Get the installed packages from all the R servers in the cluster described by the profile.
+#'
 #' @family administration functions
-#' @param opal Opal object or list of opal objects.
+#' @param opal Opal object.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @return The result of the installed.packages() call
 #' @examples 
 #' \dontrun{
@@ -93,8 +109,38 @@ oadmin.installed_package <- function(opal, pkg) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.installed_packages <- function(opal) {
-  opal.execute(opal, "installed.packages()")
+oadmin.installed_packages <- function(opal, profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    opal.execute(opal, "installed.packages()")
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    dtos <- opal.get(opal, "service", "r", "cluster", cluster, "packages")
+    n <- length(dtos)
+    name <- replicate(n, NA)
+    cluster <- replicate(n, NA)
+    rserver <- replicate(n, NA)
+    fields <- list()
+    if (n>0) {
+      # scan for description fields
+      for (i in 1:n) {
+        for (fieldName in sapply(dtos[[i]]$description, function(f) f$key)) 
+          if (!(fieldName %in% names(fields))) 
+            fields[[fieldName]] <- replicate(n, NA)
+      }
+      # populate
+      for (i in 1:n) {
+        name[i] <- dtos[[i]]$name
+        cluster[i] <- dtos[[i]]$cluster
+        rserver[i] <- dtos[[i]]$rserver
+        for (field in dtos[[i]]$description)
+          fields[[field$key]][i] <- .nullToNA(field$value)
+      }
+    }
+    df <- data.frame(name = name, cluster = cluster, rserver = rserver, stringsAsFactors = FALSE)
+    for (fieldName in names(fields))
+      df[[fieldName]] <- fields[[fieldName]]
+    df
+  }
 }
 
 #' Get package description
@@ -103,6 +149,7 @@ oadmin.installed_packages <- function(opal) {
 #' @param opal Opal object or list of opal objects.
 #' @param pkg Package name.
 #' @param fields A character vector giving the fields to extract from each package's DESCRIPTION file in addition to the default ones, or NULL (default). Unavailable fields result in NA values.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -110,10 +157,10 @@ oadmin.installed_packages <- function(opal) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.package_description <- function(opal, pkg, fields=NULL) {
+oadmin.package_description <- function(opal, pkg, fields=NULL, profile = NULL) {
   if(is.list(opal)){
     lapply(opal, function(o){oadmin.package_description(o, pkg, fields=fields)})
-  } else {
+  } else if (opal.version_compare(opal, "4.0")<0) {
     # always query for Datashield fields
     fields <- append(c("Title","Description","Author","Maintainer","Date/Publication","AggregateMethods","AssignMethods"), fields)
     inst <- opal.execute(opal, paste('installed.packages(fields=c("', paste(fields, collapse='","') ,'"))', sep=''), FALSE)
@@ -125,6 +172,14 @@ oadmin.package_description <- function(opal, pkg, fields=NULL) {
       }
     }
     return(desc)
+  } else {
+    cluster <- .toSafeProfile(opal, profile)
+    dto <- opal.get(opal, "service", "r", "cluster", cluster, "package", pkg)
+    description <- list()
+    for (entry in dto$description) {
+      description[[entry$key]] <- .nullToNA(entry$value)
+    }
+    description
   }
 }
 
@@ -134,6 +189,7 @@ oadmin.package_description <- function(opal, pkg, fields=NULL) {
 #'
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -141,8 +197,8 @@ oadmin.package_description <- function(opal, pkg, fields=NULL) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.install_devtools <- function(opal) {
-  oadmin.install_package(opal,'devtools')
+oadmin.install_devtools <- function(opal, profile = NULL) {
+  oadmin.install_cran_package(opal, 'devtools', profile = profile)
 }
 
 #' Check devtools package
@@ -151,6 +207,7 @@ oadmin.install_devtools <- function(opal) {
 #'
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -158,8 +215,33 @@ oadmin.install_devtools <- function(opal) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.installed_devtools <- function(opal) {
-  oadmin.installed_package(opal,'devtools')
+oadmin.installed_devtools <- function(opal, profile = NULL) {
+  oadmin.installed_package(opal, 'devtools', profile = profile)
+}
+
+#' Install a package from CRAN
+#' 
+#' Install a package from configured CRAN repositories.
+#'
+#' @family administration functions
+#' @param opal Opal object or list of opal objects.
+#' @param pkg Package name.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.install_cran_package(o, 'opalr', 'obiba')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.install_cran_package <- function(opal, pkg, profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    opal.post(opal, "service", "r", "packages", query = list(name = pkg, manager = "cran"))
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    opal.post(opal, "service", "r", "cluster", cluster, "packages", query = list(name = pkg, manager = "cran"))
+  }
+  oadmin.installed_package(opal, pkg, profile = profile)
 }
 
 #' Install a package from GitHub
@@ -171,6 +253,7 @@ oadmin.installed_devtools <- function(opal) {
 #' @param pkg Package name.
 #' @param username GitHub user or organization name.
 #' @param ref Desired git reference. Could be a commit, tag, or branch name. Defaults to "master".
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -178,9 +261,14 @@ oadmin.installed_devtools <- function(opal) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.install_github_package <- function(opal, pkg , username=getOption("github.user"), ref="master") {
-  opal.post(opal, "service", "r", "packages", query = list(name = paste0(username, "%2F", pkg), ref = ref, manager = "gh"))
-  oadmin.installed_package(opal, pkg)
+oadmin.install_github_package <- function(opal, pkg , username=getOption("github.user"), ref="master", profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    opal.post(opal, "service", "r", "packages", query = list(name = paste0(username, "%2F", pkg), ref = ref, manager = "gh"))
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    opal.post(opal, "service", "r", "cluster", cluster, "packages", query = list(name = paste0(username, "%2F", pkg), ref = ref, manager = "gh"))
+  }
+  oadmin.installed_package(opal, pkg, profile = profile)
 }
 
 #' Install a package from Bioconductor
@@ -190,6 +278,7 @@ oadmin.install_github_package <- function(opal, pkg , username=getOption("github
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
 #' @param pkg Package name.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -197,18 +286,25 @@ oadmin.install_github_package <- function(opal, pkg , username=getOption("github
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.install_bioconductor_package <- function(opal, pkg) {
-  opal.post(opal, "service", "r", "packages", query = list(name = pkg, manager = "bioc"))
-  oadmin.installed_package(opal, pkg)
+oadmin.install_bioconductor_package <- function(opal, pkg, profile = NULL) {
+  if (opal.version_compare(opal, "4.0")<0)
+    opal.post(opal, "service", "r", "packages", query = list(name = pkg, manager = "bioc"))
+  else {
+    cluster <- .toSafeProfile(opal, profile)
+    opal.post(opal, "service", "r", "cluster", cluster, "packages", query = list(name = pkg, manager = "bioc"))
+  }
+  oadmin.installed_package(opal, pkg, profile = profile)
 }
 
 #' Install a package from a local archive file
 #' 
 #' Install a package from a package archive file. This will upload the archive file and run its installation in the R server.
+#' The R server profile to which the operation applies is the one specified at login time.
 #'
 #' @family administration functions
 #' @param opal Opal object or list of opal objects.
 #' @param path Path to the package archive file.
+#' @param profile The R servers profile name to which operation applies. See also \link{opal.profiles}.
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
@@ -219,7 +315,7 @@ oadmin.install_bioconductor_package <- function(opal, pkg) {
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.install_local_package <- function(opal, path) {
+oadmin.install_local_package <- function(opal, path, profile = NULL) {
   if (!file.exists(path)) {
     stop("Package archive file cannot be found at: ", path)
   }
@@ -234,11 +330,17 @@ oadmin.install_local_package <- function(opal, path) {
   
   tmp <- opal.file_mkdir_tmp(opal)
   opal.file_upload(opal, path, tmp)
-  opal.file_write(opal, paste0(tmp, filename))
-  opal.file_rm(opal, tmp)
-  opal.execute(opal, paste0("install.packages('", filename, "', repos = NULL, type ='source')"))
   
-  oadmin.installed_package(opal, pkg)
+  if (opal.version_compare(opal, "4.2")<0) {
+    opal.file_write(opal, paste0(tmp, filename))
+    opal.execute(opal, paste0("install.packages('", filename, "', repos = NULL, type ='source')"))
+  } else {
+    cluster <- .toSafeProfile(opal, profile)
+    opal.post(opal, "service", "r", "cluster", cluster, "packages", query = list(name = paste0(tmp, filename), manager = "local"))
+  }
+  
+  opal.file_rm(opal, tmp)
+  oadmin.installed_package(opal, pkg, profile = .toSafeProfile(opal, profile))
 }
 
 #' Add or update a R permission
@@ -252,13 +354,13 @@ oadmin.install_local_package <- function(opal, path) {
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
-#' oadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
-#' oadmin.perm(o)
-#' oadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.perm_add <- function(opal, subject, type = "user", permission) {
+oadmin.r_perm_add <- function(opal, subject, type = "user", permission = 'use') {
   if (!(tolower(type) %in% c("user", "group"))) {
     stop("Not a valid subject type: ", type)
   }
@@ -267,7 +369,7 @@ oadmin.perm_add <- function(opal, subject, type = "user", permission) {
   if (is.null(perm)) {
     stop("Not a valid R permission name: ", permission)
   }
-  oadmin.perm_delete(opal, subject, type)
+  oadmin.r_perm_delete(opal, subject, type)
   for (i in 1:length(subject)) {
     ignore <- opal.post(opal, "system", "permissions", "r", query = list(principal = subject[i], type = toupper(type), permission = perm))
   }
@@ -283,14 +385,14 @@ oadmin.perm_add <- function(opal, subject, type = "user", permission) {
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
-#' oadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
-#' oadmin.perm(o)
-#' oadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.perm <- function(opal) {
-  perms <- list('R_USE' = 'use', 'R_ALL' = 'administrate')
+oadmin.r_perm <- function(opal) {
+  perms <- list('R_USE' = 'use')
   acls <- opal.get(opal, "system", "permissions", "r")
   .aclsToDataFrame(perms, acls)
 }
@@ -305,13 +407,13 @@ oadmin.perm <- function(opal) {
 #' @examples 
 #' \dontrun{
 #' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
-#' oadmin.perm_add(o, c('andrei', 'valentina'), 'user', 'use')
-#' oadmin.perm(o)
-#' oadmin.perm_delete(o, c('andrei', 'valentina'), 'user')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
 #' opal.logout(o)
 #' }
 #' @export
-oadmin.perm_delete <- function(opal, subject, type = "user") {
+oadmin.r_perm_delete <- function(opal, subject, type = "user") {
   if (!(tolower(type) %in% c("user", "group"))) {
     stop("Not a valid subject type: ", type)
   }
@@ -321,4 +423,175 @@ oadmin.perm_delete <- function(opal, subject, type = "user") {
   for (i in 1:length(subject)) {
     ignore <- opal.delete(opal, "system", "permissions", "r", query = list(principal = subject[i], type = toupper(type)))  
   }
+}
+
+#' Get system metrics
+#' 
+#' Get some metrics about the Opal system status. The following information are returned:
+#' `timestamp` (the EPOC time at which the metrics were collected),
+#' `uptime` (the running time in millis),
+#' `heapMemory` (the memory currently used),
+#' `nonHeapMemory` (the memory that can be used),
+#' `threads` (the current (count) and maximum (peak) numbers of threads),
+#' `gcs` (the garbage collectors activity).
+#' 
+#' @param opal Opal connection object.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.system_metrics(o)
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.system_metrics <- function(opal) {
+  opal.get(opal, "system", "status")
+}
+
+#' Add or update a System permission
+#' 
+#' Add or update a permission on the whole system.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @param permission The permission to apply: project_add or administrate.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.system_perm_add(o, c('andrei', 'valentina'), 'user', 'project_add')
+#' oadmin.system_perm(o)
+#' oadmin.system_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.system_perm_add <- function(opal, subject, type = "user", permission) {
+  if (!(tolower(type) %in% c("user", "group"))) {
+    stop("Not a valid subject type: ", type)
+  }
+  perms <- list('project_add' = 'PROJECT_ADD', 'administrate' = 'SYSTEM_ALL')
+  perm <- perms[[permission]]
+  if (is.null(perm)) {
+    stop("Not a valid system permission name: ", permission)
+  }
+  oadmin.system_perm_delete(opal, subject, type)
+  for (i in 1:length(subject)) {
+    ignore <- opal.post(opal, "system", "permissions", "administration", query = list(principal = subject[i], type = toupper(type), permission = perm))
+  }
+}
+
+#' Get the System permissions
+#' 
+#' Get the permissions that were applied to the whole system.
+#' 
+#' @param opal Opal connection object.
+#' 
+#' @return A data.frame with columns: subject, type, permission
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.system_perm_add(o, c('andrei', 'valentina'), 'user', 'project_add')
+#' oadmin.system_perm(o)
+#' oadmin.system_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.system_perm <- function(opal) {
+  perms <- list('PROJECT_ADD' = 'project_add', 'SYSTEM_ALL' = 'administrate')
+  acls <- opal.get(opal, "system", "permissions", "administration")
+  .aclsToDataFrame(perms, acls)
+}
+
+#' Delete a System permission
+#' 
+#' Delete a permission that was applied to the whole system. Silently returns when there is no such permission.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.system_perm_add(o, c('andrei', 'valentina'), 'user', 'project_add')
+#' oadmin.system_perm(o)
+#' oadmin.system_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.system_perm_delete <- function(opal, subject, type = "user") {
+  if (!(tolower(type) %in% c("user", "group"))) {
+    stop("Not a valid subject type: ", type)
+  }
+  if (length(subject)<1) {
+    stop("At least one subject is required")
+  }
+  for (i in 1:length(subject)) {
+    ignore <- opal.delete(opal, "system", "permissions", "administration", query = list(principal = subject[i], type = toupper(type)))  
+  }
+}
+
+#
+# Deprecated functions
+#
+
+#' Add or update a R permission (deprecated)
+#' 
+#' Deprecated, use \link{oadmin.r_perm_add}.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @param permission The permission to apply: use.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.perm_add <- function(opal, subject, type = "user", permission) {
+  warning("Deprecated: use oadmin.r_perm_add()")
+  oadmin.r_perm_add(opal, subject, type, permission)
+}
+
+#' Get the R permissions (deprecated)
+#' 
+#' Deprecated, use \link{oadmin.r_perm}.
+#' 
+#' @param opal Opal connection object.
+#' 
+#' @return A data.frame with columns: subject, type, permission
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.perm <- function(opal) {
+  warning("Deprecated: use oadmin.r_perm()")
+  oadmin.r_perm(opal)
+}
+
+#' Delete a R permission (deprecated)
+#' 
+#' Deprecated, use \link{oadmin.r_perm_delete}.
+#' 
+#' @param opal Opal connection object.
+#' @param subject A vector of subject identifiers: user names or group names (depending on the type).
+#' @param type The type of subject: user (default) or group.
+#' @examples 
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' oadmin.r_perm_add(o, c('andrei', 'valentina'), 'user', 'use')
+#' oadmin.r_perm(o)
+#' oadmin.r_perm_delete(o, c('andrei', 'valentina'), 'user')
+#' opal.logout(o)
+#' }
+#' @export
+oadmin.perm_delete <- function(opal, subject, type = "user") {
+  oadmin.perm_delete(opal, subject, type)
 }

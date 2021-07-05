@@ -4,7 +4,13 @@
 \alias{dsadmin.install_package}
 \title{Install a DataSHIELD package}
 \usage{
-dsadmin.install_package(opal, pkg, githubusername = NULL, ref = NULL)
+dsadmin.install_package(
+  opal,
+  pkg,
+  githubusername = NULL,
+  ref = NULL,
+  profile = NULL
+)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
@@ -14,6 +20,8 @@ dsadmin.install_package(opal, pkg, githubusername = NULL, ref = NULL)
 \item{githubusername}{GitHub username of git repository. If NULL (default), try to install from DataSHIELD package repository.}
 
 \item{ref}{Desired git reference (could be a commit, tag, or branch name). If NULL (default), try to install from DataSHIELD package repository.}
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \value{
 TRUE if installed
@@ -38,13 +46,16 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
 \code{\link{dsadmin.package_description}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
 \code{\link{dsadmin.rm_method}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_option}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

@@ -20,7 +20,8 @@ opal.project_create(
 \item{project}{Name of the project}
 
 \item{database}{The database name (as declared in Opal) to be used to store project's data. If not provided, the project
-can have views and resources but no raw tables.}
+can have views and resources but no raw tables. If the the value is a logical and is TRUE, the default database will be 
+selected or the first one if there is no default.}
 
 \item{title}{The title of the project (optional).}
 
@@ -36,7 +37,12 @@ Create a project
 \examples{
 \dontrun{
 o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+# with named database
 opal.project_create(o, 'test', database='opal_data', title='This is a test', tags=list('Test'))
+# with default database
+opal.project_create(o, 'test_default_db', database = TRUE)
+# no database, for views and resources only
+opal.project_create(o, 'test_no_db')
 opal.logout(o)
 }
 }
@@ -44,13 +50,8 @@ opal.logout(o)
 Other project functions: 
 \code{\link{opal.project_delete}()},
 \code{\link{opal.project_exists}()},
+\code{\link{opal.projects_databases}()},
 \code{\link{opal.projects}()},
-\code{\link{opal.project}()},
-\code{\link{opal.resource_create}()},
-\code{\link{opal.resource_exists}()},
-\code{\link{opal.resource_extension_create}()},
-\code{\link{opal.resource_get}()},
-\code{\link{opal.resources}()},
-\code{\link{opal.resource}()}
+\code{\link{opal.project}()}
 }
 \concept{project functions}

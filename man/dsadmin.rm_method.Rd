@@ -4,7 +4,7 @@
 \alias{dsadmin.rm_method}
 \title{Remove DataSHIELD method}
 \usage{
-dsadmin.rm_method(opal, name, type = "aggregate")
+dsadmin.rm_method(opal, name, type = "aggregate", profile = NULL)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
@@ -12,6 +12,8 @@ dsadmin.rm_method(opal, name, type = "aggregate")
 \item{name}{Name of the method, as it is accessed by DataSHIELD users.}
 
 \item{type}{Type of the method: "aggregate" (default) or "assign"}
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \description{
 Remove DataSHIELD method
@@ -34,12 +36,15 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
 \code{\link{dsadmin.package_description}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_option}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

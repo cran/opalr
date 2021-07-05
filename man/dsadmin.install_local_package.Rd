@@ -4,15 +4,14 @@
 \alias{dsadmin.install_local_package}
 \title{Install a DataSHIELD package from a local archive file}
 \usage{
-dsadmin.install_local_package(opal, path)
+dsadmin.install_local_package(opal, path, profile = profile)
 }
 \arguments{
 \item{opal}{Opal object or list of opal objects.}
 
 \item{path}{Path to the package archive, ending with .}
-}
-\value{
-TRUE if installed
+
+\item{profile}{The DataSHIELD profile name to which operation applies. See also \link{dsadmin.profiles}.}
 }
 \description{
 Install a package from a package archive file, resulting from the build of a server-side DataSHIELD package.
@@ -38,13 +37,16 @@ Other DataSHIELD functions:
 \code{\link{dsadmin.installed_package}()},
 \code{\link{dsadmin.package_descriptions}()},
 \code{\link{dsadmin.package_description}()},
+\code{\link{dsadmin.publish_package}()},
 \code{\link{dsadmin.remove_package}()},
 \code{\link{dsadmin.rm_methods}()},
 \code{\link{dsadmin.rm_method}()},
+\code{\link{dsadmin.rm_options}()},
 \code{\link{dsadmin.rm_option}()},
 \code{\link{dsadmin.rm_package_methods}()},
 \code{\link{dsadmin.set_method}()},
 \code{\link{dsadmin.set_option}()},
-\code{\link{dsadmin.set_package_methods}()}
+\code{\link{dsadmin.set_package_methods}()},
+\code{\link{dsadmin.unpublish_package}()}
 }
 \concept{DataSHIELD functions}

@@ -2,19 +2,33 @@
 % Please edit documentation in R/opal.file.R
 \name{opal.file_upload}
 \alias{opal.file_upload}
-\title{Upload a file}
+\title{Upload a file or a folder}
 \usage{
-opal.file_upload(opal, source, destination)
+opal.file_upload(opal, source, destination, all.files = TRUE)
 }
 \arguments{
 \item{opal}{Opal object.}
 
 \item{source}{Path to the file in the local file system.}
 
-\item{destination}{Path of the destination folder in the Opal file system.}
+\item{destination}{Path of the destination folder in the Opal file system. Folder (and parents) will be created if missing.}
+
+\item{all.files}{When FALSE, upload only visible files (following Unix-style visibility, that is files whose name 
+does not start with a dot). Default is TRUE.}
 }
 \description{
-Upload a file into the Opal file system.
+Upload a file or a folder into the Opal file system. Creates the destination folder (and parents)
+when necessary. Hidden files and folders (with name starting with dot) can be excluded.
+}
+\examples{
+\dontrun{
+o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+# upload a file
+opal.file_upload(o, 'some_data.csv', '/home/administrator')
+# upload a folder
+opal.file_upload(o, 'some_data', '/home/administrator')
+opal.logout(o)
+}
 }
 \seealso{
 Other file functions: 
@@ -26,6 +40,7 @@ Other file functions:
 \code{\link{opal.file_mv}()},
 \code{\link{opal.file_read}()},
 \code{\link{opal.file_rm}()},
+\code{\link{opal.file_unzip}()},
 \code{\link{opal.file_write}()},
 \code{\link{opal.file}()}
 }
