@@ -22,7 +22,7 @@ opal.login(
 \item{token}{Personal access token (since opal 2.15). Only effective if the username or the password is NULL or empty. 
 Can be provided by "opal.token" option.}
 
-\item{url}{Opal url or list of opal urls. Can be provided by "opal.url" option.}
+\item{url}{Opal url or list of opal urls. Can be provided by "opal.url" option. Secure http (https) connection is required.}
 
 \item{opts}{Curl options as described by httr (call httr::httr_options() for details). Can be provided by "opal.opts" option.}
 
@@ -36,7 +36,9 @@ R server profile will be applied ('default'). See also \link{opal.profiles}.}
 A opal object or a list of opal objects.
 }
 \description{
-Log in Opal(s).
+Log in Opal(s). Different login strategies are possible: (1) by providing username/password, or (2) by providing
+username/password and a one-time password code (TOPT) when user has activated two-factor authentication, 
+or (3) by providing a personal access token (PAT), or (4) by providing a key pair in PEM format.
 }
 \examples{
 \dontrun{
