@@ -214,6 +214,57 @@ opal.table_view_create <- function(opal, project, table, tables, type = "Partici
   }
 }
 
+#' Update the table references and the entity filter of an Opal view
+#'
+#' Update the table references and/or the entity filter of an existing Opal view. The view
+#' dictionary will NOT be modified (use \link{opal.table_dictionary_update} to
+#' apply a dictionary).
+#'
+#' @family table functions
+#' @param opal Opal connection object.
+#' @param project Project name where the table will be located.
+#' @param table Table name to be created.
+#' @param tables List of the fully qualified table names that are referred by the view. Not modified when NULL (default).
+#' @param where The entity filter script. Not modified when NULL (default). To remove the filter, set an empty string.
+#' @examples
+#' \dontrun{
+#' o <- opal.login('administrator','password', url='https://opal-demo.obiba.org')
+#' # make a view
+#' opal.table_view_create(o, "CNSIM", "CNSIM123",
+#'                        c("CNSIM.CNSIM1"))
+#' 
+#' # update the table references
+#' opal.table_view_update(o, "CNSIM", "CNSIM123",
+#'                        tables = c("CNSIM.CNSIM1", "CNSIM.CNSIM2", "CNSIM.CNSIM3"))
+#' 
+#' # update the entity filter
+#' opal.table_view_update(o, "CNSIM", "CNSIM123", where = "$('LAB_TSC').ge(5)")
+#' 
+#' # remove the entity filter
+#' opal.table_view_update(o, "CNSIM", "CNSIM123", where = "")
+#' 
+#' # update both the table references and the entity filter
+#' opal.table_view_update(o, "CNSIM", "CNSIM123",
+#'                        tables = c("CNSIM.CNSIM1", "CNSIM.CNSIM2", "CNSIM.CNSIM3"),
+#'                        where = "$('LAB_TSC').ge(5)")
+#' opal.logout(o)
+#' }
+#' @export
+opal.table_view_update <- function(opal, project, table, tables = NULL, where = NULL) {
+  view <- opal.get(opal, "datasource", project, "view", table)
+  if (!is.null(tables)) {
+    view$from <- tables  
+  }
+  if (!is.null(where)) {
+    if (nchar(where) == 0) {
+      view$where <- NULL
+    } else {
+      view$where <- where  
+    }
+  }
+  ignore <- opal.put(opal, "datasource", project, "view", table, body = jsonlite::toJSON(view, auto_unbox = TRUE), contentType = "application/json")
+}
+
 #' Truncate a Opal table
 #'
 #' Removes the values of a table and keep the dictionary untouched. Fails if the table does
