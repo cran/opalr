@@ -12,10 +12,39 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2023-02-03" />
+<meta name="date" content="2023-02-28" />
 
 <title>Opal R Session</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -37,26 +66,27 @@
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -65,9 +95,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -319,7 +349,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Opal R Session</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2023-02-03</h4>
+<h4 class="date">2023-02-28</h4>
 
 
 
@@ -333,55 +363,55 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="setup" class="section level2">
 <h2>Setup</h2>
 <p>Setup the connection with Opal, specifying that the R server session must be created with the “default” profile, i.e. in the “default” R servers cluster (note that the profile parameter is optional):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(opalr)</a>
-<a class="sourceLine" id="cb1-2" title="2">o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(opalr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 </div>
 <div id="assign" class="section level2">
 <h2>Assign</h2>
 <p>Assign a Opal table to a <em>data.frame</em> (if user has permission to see values of the Opal table):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">opal.assign.table</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;df&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">opal.assign.table</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;df&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
 <p>In place of a standard <em>data.frame</em>, Opal can assign data into a <a href="https://tibble.tidyverse.org/">tibble</a>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">opal.assign.table.tibble</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;tbl&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">opal.assign.table.tibble</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;tbl&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
 <p>Resource objects can be assigned to the R server session:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">opal.assign.resource</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;rsrc&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;RSRC.CNSIM3&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">opal.assign.resource</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;rsrc&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;RSRC.CNSIM3&quot;</span>)</span></code></pre></div>
 <p>An R expression can also be assigned to a symbol (use <code>quote()</code> to not interpret the expression in the client side R session). As an example assign a function body:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">opal.assign.script</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">value =</span> <span class="kw">quote</span>(<span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">opal.assign.script</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">value =</span> <span class="kw">quote</span>(<span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }))</span></code></pre></div>
 <p>List the R symbols that lives in the remote R session:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">opal.symbols</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">opal.symbols</span>(o)</span></code></pre></div>
 </div>
 <div id="execute" class="section level2">
 <h2>Execute</h2>
 <p>R expressions can be executed on the server side:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># column names</span></a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;names(tbl)&quot;</span>)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="co"># get variable description from column attributes</span></a>
-<a class="sourceLine" id="cb7-4" title="4"><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;attributes(tbl$GENDER)&quot;</span>)</a>
-<a class="sourceLine" id="cb7-5" title="5"><span class="co"># coerce resource to a data.frame and plot histogram of one column</span></a>
-<a class="sourceLine" id="cb7-6" title="6"><span class="kw">plot</span>(<span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hist(as.data.frame(rsrc)$LAB_HDL)&quot;</span>))</a>
-<a class="sourceLine" id="cb7-7" title="7"><span class="co"># execute the custom function</span></a>
-<a class="sourceLine" id="cb7-8" title="8"><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hello(&#39;friends&#39;)&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co"># column names</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;names(tbl)&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="co"># get variable description from column attributes</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;attributes(tbl$GENDER)&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="co"># coerce resource to a data.frame and plot histogram of one column</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">plot</span>(<span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hist(as.data.frame(rsrc)$LAB_HDL)&quot;</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="co"># execute the custom function</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hello(&#39;friends&#39;)&quot;</span>)</span></code></pre></div>
 <p>The remote data can be downloaded into the client side R session:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">GENDER &lt;-<span class="st"> </span><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;tbl$GENDER&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>GENDER &lt;-<span class="st"> </span><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;tbl$GENDER&quot;</span>)</span></code></pre></div>
 <p>To execute more complex R code, use a local source file:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">opal.execute.source</span>(o, <span class="dt">path =</span> <span class="st">&quot;/path/to/some_code.R&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">opal.execute.source</span>(o, <span class="dt">path =</span> <span class="st">&quot;/path/to/some_code.R&quot;</span>)</span></code></pre></div>
 </div>
 <div id="files" class="section level2">
 <h2>Files</h2>
 <p>Files can be written from the Opal file system to the R server session folder:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">opal.file_write</span>(o, <span class="dt">source =</span> <span class="st">&quot;/projects/CNSIM/CNSIM3.zip&quot;</span>, <span class="st">&quot;test.zip&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">opal.file_write</span>(o, <span class="dt">source =</span> <span class="st">&quot;/projects/CNSIM/CNSIM3.zip&quot;</span>, <span class="st">&quot;test.zip&quot;</span>)</span></code></pre></div>
 <p>Similarly, files can be read from the R server session folder into the Opal file system:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">opal.file_read</span>(o, <span class="dt">source =</span> <span class="st">&quot;test.zip&quot;</span>, <span class="dt">destination =</span> <span class="st">&quot;/tmp&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">opal.file_read</span>(o, <span class="dt">source =</span> <span class="st">&quot;test.zip&quot;</span>, <span class="dt">destination =</span> <span class="st">&quot;/tmp&quot;</span>)</span></code></pre></div>
 </div>
 <div id="workspace" class="section level2">
 <h2>Workspace</h2>
 <p>The image of the remote R session can be saved in a <em>workspace</em> (to be restored at login time):</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">opal.workspace_save</span>(o, <span class="dt">save=</span><span class="st">&quot;demo&quot;</span>)</a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw">opal.workspaces</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">opal.workspace_save</span>(o, <span class="dt">save=</span><span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="kw">opal.workspaces</span>(o)</span></code></pre></div>
 </div>
 <div id="teardown" class="section level2">
 <h2>Teardown</h2>
 <p>Good practice is to free server resources by sending a logout request:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">opal.logout</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">opal.logout</span>(o)</span></code></pre></div>
 </div>
 
 

@@ -1,4 +1,4 @@
-7d4a10f37debe800dbd6dfc01d53b8de *DESCRIPTION
+faa425d5260d62a66ffdf658002e9ae5 *DESCRIPTION
 1d685d14fccdb9f8f53f45b620140a3c *NAMESPACE
 323dfbe68403d887103ccd6b0d4603a4 *R/datashield.admin.R
 a9c820e97560897aa3a219c09b444455 *R/dictionary.R
@@ -13,7 +13,7 @@ e8fa42579ae39e610bb83fdfa52792dc *R/opal.command.R
 0b8580a86a2f13abef6b4c0dd17c2f3c *R/opal.file.R
 a24a5743bf59bc25b0862047fdea1fe7 *R/opal.project.R
 d9f1b740bab1337362bb9f895dca0f58 *R/opal.report.R
-14bb7eb15807928e663113adf79075a5 *R/opal.resource.R
+392fb0df28564d76e0c3e53fbd7ef29d *R/opal.resource.R
 3e821e12438a070baeffa57bd2202e40 *R/opal.sql.R
 c39909a9952f695b939968d6cd46a5bf *R/opal.symbol.R
 340ab95179b661d8cdb8f29ca2988420 *R/opal.table.R
@@ -28,16 +28,16 @@ cc4363cd98b2d1c8ac92807ad65717a6 *README.md
 171f170195f1d4347681b0110172e813 *build/vignette.rds
 8709cef8bf8c0e3e7797de59fe813243 *inst/doc/datashield-admin.R
 2e91ecea523e75ab117abdd8835b69c8 *inst/doc/datashield-admin.Rmd
-5a0b56201fa764120c4ba04713395d7d *inst/doc/datashield-admin.html
+f60b61c541844a50299f56085610b3c7 *inst/doc/datashield-admin.html
 3dc14ebf21b648ad9a3bb47674ca7cfc *inst/doc/opal-files.R
 0de35cac2a1f0923bd1676b5bad3e7aa *inst/doc/opal-files.Rmd
-28e538c3f0c6349de4b8aef082a886d4 *inst/doc/opal-files.html
+7b073cc32b30b6b4a4301537b6793405 *inst/doc/opal-files.html
 6e78072de687388dc0ed47f651f025e7 *inst/doc/opal-projects.R
 0165baf0b99e6440446d98a278fb392f *inst/doc/opal-projects.Rmd
-5964623a77d30f73fd316c1e9ec0a5a0 *inst/doc/opal-projects.html
+d829242b376ec6c6420c4406be15e511 *inst/doc/opal-projects.html
 986f6aa53269898e94022e9b7371831e *inst/doc/opal-rsession.R
 8837a15309a0118280e6cbe79eecab60 *inst/doc/opal-rsession.Rmd
-638e0aea375c2151ffd88406a4a877a4 *inst/doc/opal-rsession.html
+b17b9a876173192546a8780c8f849712 *inst/doc/opal-rsession.html
 70d225d1a7ddb380b1b9b58a783278af *inst/examples/opal-commands.R
 96654a4b3cdf62b8a9f55b9743605370 *inst/examples/opal-datasources.R
 03e5e5085d34367a4262c741a3d147f5 *inst/examples/opal-login-certificate.R

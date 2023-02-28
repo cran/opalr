@@ -12,10 +12,39 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2023-02-03" />
+<meta name="date" content="2023-02-28" />
 
 <title>DataSHIELD Administration</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -37,26 +66,27 @@
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -65,9 +95,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -319,7 +349,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">DataSHIELD Administration</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2023-02-03</h4>
+<h4 class="date">2023-02-28</h4>
 
 
 
@@ -334,22 +364,22 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="setup" class="section level2">
 <h2>Setup</h2>
 <p>Setup the connection with Opal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(opalr)</a>
-<a class="sourceLine" id="cb1-2" title="2">o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(opalr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</span></code></pre></div>
 </div>
 <div id="r-packages" class="section level2">
 <h2>R Packages</h2>
 <p>Opal can handle clusters of R servers. R packages are handled at the cluster level (because all the R servers in a cluster are expected to be identical). See <a href="https://opaldoc.obiba.org/en/latest/admin/rserver.html">Opal and R server documentation</a>.</p>
 <p>List installed DataSHIELD R packages:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">dsadmin.package_descriptions</span>(o, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">dsadmin.package_descriptions</span>(o, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 <p>Install a DataSHIELD R package from the configured CRAN repositories (most likely the <a href="https://cran.datashield.org/">DataSHIELD repo</a>):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">dsadmin.install_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsBase&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">dsadmin.install_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsBase&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 <p>R packages which source code is one GitHub can be installed directly:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">dsadmin.install_github_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">username =</span> <span class="st">&quot;neelsoumya&quot;</span>, <span class="dt">ref =</span> <span class="st">&quot;v1.0.0&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">dsadmin.install_github_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">username =</span> <span class="st">&quot;neelsoumya&quot;</span>, <span class="dt">ref =</span> <span class="st">&quot;v1.0.0&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 <p>When developing a new DataSHIELD R package, it can be built and installed as follow (from the root of the R package source directory):</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">dsadmin.install_local_package</span>(o, devtools<span class="op">::</span><span class="kw">build</span>(), <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">dsadmin.install_local_package</span>(o, devtools<span class="op">::</span><span class="kw">build</span>(), <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 <p>To remove a DataSHIELD R package:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">dsadmin.remove_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">dsadmin.remove_package</span>(o, <span class="dt">pkg =</span> <span class="st">&quot;dsSurvival&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 <p>Note that removing a package does not update the DataSHIELD settings of the associated profiles. See the following sections to administrate the profiles and their settings.</p>
 </div>
 <div id="profiles" class="section level2">
@@ -361,21 +391,21 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>restrict access to some users/groups.</li>
 </ul>
 <p>To list the DataSHIELD profiles:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">dsadmin.profiles</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">dsadmin.profiles</span>(o)</span></code></pre></div>
 <p>To create a new DataSHIELD profile, to initialize it the DataSHIELD settings as declared by the installed packages and to enable it, use the following.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="co"># ensure the profile does not exist</span></a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="cf">if</span> (<span class="kw">dsadmin.profile_exists</span>(o, <span class="st">&quot;demo&quot;</span>))</a>
-<a class="sourceLine" id="cb8-3" title="3">  <span class="kw">dsadmin.profile_delete</span>(o, <span class="st">&quot;demo&quot;</span>)</a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="co"># create a profile, disabled</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="kw">dsadmin.profile_create</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">cluster =</span> <span class="st">&quot;default&quot;</span>)</a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="co"># make only dsBase and resourcer packages visible</span></a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="kw">dsadmin.profile_init</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">packages =</span> <span class="kw">c</span>(<span class="st">&quot;dsBase&quot;</span>, <span class="st">&quot;resourcer&quot;</span>))</a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co"># ready to be used</span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="kw">dsadmin.profile_enable</span>(o, <span class="st">&quot;demo&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="co"># ensure the profile does not exist</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">dsadmin.profile_exists</span>(o, <span class="st">&quot;demo&quot;</span>))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>  <span class="kw">dsadmin.profile_delete</span>(o, <span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="co"># create a profile, disabled</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="kw">dsadmin.profile_create</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">cluster =</span> <span class="st">&quot;default&quot;</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a><span class="co"># make only dsBase and resourcer packages visible</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="kw">dsadmin.profile_init</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">packages =</span> <span class="kw">c</span>(<span class="st">&quot;dsBase&quot;</span>, <span class="st">&quot;resourcer&quot;</span>))</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="co"># ready to be used</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a><span class="kw">dsadmin.profile_enable</span>(o, <span class="st">&quot;demo&quot;</span>)</span></code></pre></div>
 <p>When a DataSHIELD R package is installed but should be used only by a restricted group of users, proceed as follow:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">dsadmin.profile_perm_add</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;testers&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>)</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="co"># verify permissions</span></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="kw">dsadmin.profile_perm</span>(o, <span class="st">&quot;demo&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">dsadmin.profile_perm_add</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;testers&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="co"># verify permissions</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">dsadmin.profile_perm</span>(o, <span class="st">&quot;demo&quot;</span>)</span></code></pre></div>
 </div>
 <div id="settings" class="section level2">
 <h2>Settings</h2>
@@ -384,36 +414,36 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h3>Methods</h3>
 <p>The DataSHIELD methods define the allowed function calls and their mapping to a server side function call.</p>
 <p>To list the aggregation functions:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">dsadmin.get_methods</span>(o, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">dsadmin.get_methods</span>(o, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span></code></pre></div>
 <p>Fully custom settings can be defined (useful for developers).</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">dsadmin.set_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">func =</span> <span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="co"># verfiy custom method </span></a>
-<a class="sourceLine" id="cb11-3" title="3"><span class="kw">dsadmin.get_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">dsadmin.set_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">func =</span> <span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="co"># verfiy custom method </span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="kw">dsadmin.get_method</span>(o, <span class="st">&quot;hello&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;aggregate&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span></code></pre></div>
 <p>A simple test of our custom <code>hello()</code> function would be:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">library</span>(DSOpal)</a>
-<a class="sourceLine" id="cb12-2" title="2">builder &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">newDSLoginBuilder</span>()</a>
-<a class="sourceLine" id="cb12-3" title="3">builder<span class="op">$</span><span class="kw">append</span>(<span class="dt">server =</span> <span class="st">&quot;study1&quot;</span>,  <span class="dt">url =</span> <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>,</a>
-<a class="sourceLine" id="cb12-4" title="4">               <span class="dt">user =</span> <span class="st">&quot;administrator&quot;</span>, <span class="dt">password =</span> <span class="st">&quot;password&quot;</span>,</a>
-<a class="sourceLine" id="cb12-5" title="5">               <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a>
-<a class="sourceLine" id="cb12-6" title="6">logindata &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">build</span>()</a>
-<a class="sourceLine" id="cb12-7" title="7">conns &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">datashield.login</span>(<span class="dt">logins =</span> logindata)</a>
-<a class="sourceLine" id="cb12-8" title="8"><span class="co"># call the hello() function on the R server</span></a>
-<a class="sourceLine" id="cb12-9" title="9"><span class="kw">datashield.aggregate</span>(conns, <span class="dt">expr =</span> <span class="kw">quote</span>(<span class="kw">hello</span>(<span class="st">&#39;friends&#39;</span>)))</a>
-<a class="sourceLine" id="cb12-10" title="10"><span class="kw">datashield.logout</span>(conns)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">library</span>(DSOpal)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>builder &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">newDSLoginBuilder</span>()</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a>builder<span class="op">$</span><span class="kw">append</span>(<span class="dt">server =</span> <span class="st">&quot;study1&quot;</span>,  <span class="dt">url =</span> <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>               <span class="dt">user =</span> <span class="st">&quot;administrator&quot;</span>, <span class="dt">password =</span> <span class="st">&quot;password&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a>               <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>logindata &lt;-<span class="st"> </span>builder<span class="op">$</span><span class="kw">build</span>()</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>conns &lt;-<span class="st"> </span>DSI<span class="op">::</span><span class="kw">datashield.login</span>(<span class="dt">logins =</span> logindata)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a><span class="co"># call the hello() function on the R server</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a><span class="kw">datashield.aggregate</span>(conns, <span class="dt">expr =</span> <span class="kw">quote</span>(<span class="kw">hello</span>(<span class="st">&#39;friends&#39;</span>)))</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a><span class="kw">datashield.logout</span>(conns)</span></code></pre></div>
 </div>
 <div id="options" class="section level3">
 <h3>Options</h3>
 <p>The DataSHIELD R options affects the behaviour of some methods.</p>
 <p>To modify an R option:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">dsadmin.set_option</span>(o, <span class="st">&quot;datashield.privacyLevel&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a>
-<a class="sourceLine" id="cb13-2" title="2"><span class="co"># verify options</span></a>
-<a class="sourceLine" id="cb13-3" title="3"><span class="kw">dsadmin.get_options</span>(o, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">dsadmin.set_option</span>(o, <span class="st">&quot;datashield.privacyLevel&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a><span class="co"># verify options</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="kw">dsadmin.get_options</span>(o, <span class="dt">profile =</span> <span class="st">&quot;demo&quot;</span>)</span></code></pre></div>
 </div>
 <div id="r-parser" class="section level3">
 <h3>R Parser</h3>
 <p>An advanced setting, mostly for backward compatibility issues, is the possibility to chose which R parser should be used by Opal when validating the submitted R code (remember that only a subset of the R language is allowed). See <a href="https://github.com/obiba/datashield4j/blob/master/README.md">datashield4j library documentation</a> for possible values.</p>
 <p>To set the legacy R parser:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">dsadmin.profile_rparser</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">rParser =</span> <span class="st">&quot;v1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="kw">dsadmin.profile_rparser</span>(o, <span class="st">&quot;demo&quot;</span>, <span class="dt">rParser =</span> <span class="st">&quot;v1&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="users-and-permissions" class="section level2">
@@ -422,36 +452,36 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="users" class="section level3">
 <h3>Users</h3>
 <p>To facilitate permissions maintenance, create users in appropriate group(s). Groups can represent data access and DataSHIELD service access.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1"><span class="cf">if</span> (<span class="kw">oadmin.user_exists</span>(o, <span class="st">&quot;userx&quot;</span>))</a>
-<a class="sourceLine" id="cb15-2" title="2">  <span class="kw">oadmin.user_delete</span>(o, <span class="st">&quot;userx&quot;</span>)</a>
-<a class="sourceLine" id="cb15-3" title="3"><span class="co"># generated password</span></a>
-<a class="sourceLine" id="cb15-4" title="4">password &lt;-<span class="st"> </span><span class="kw">oadmin.user_add</span>(o, <span class="st">&quot;userx&quot;</span>, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;demo&quot;</span>, <span class="st">&quot;datashield&quot;</span>))</a>
-<a class="sourceLine" id="cb15-5" title="5"><span class="co"># verify user</span></a>
-<a class="sourceLine" id="cb15-6" title="6"><span class="kw">subset</span>(<span class="kw">oadmin.users</span>(o), name <span class="op">==</span><span class="st"> &quot;userx&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="cf">if</span> (<span class="kw">oadmin.user_exists</span>(o, <span class="st">&quot;userx&quot;</span>))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a>  <span class="kw">oadmin.user_delete</span>(o, <span class="st">&quot;userx&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true"></a><span class="co"># generated password</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true"></a>password &lt;-<span class="st"> </span><span class="kw">oadmin.user_add</span>(o, <span class="st">&quot;userx&quot;</span>, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;demo&quot;</span>, <span class="st">&quot;datashield&quot;</span>))</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true"></a><span class="co"># verify user</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true"></a><span class="kw">subset</span>(<span class="kw">oadmin.users</span>(o), name <span class="op">==</span><span class="st"> &quot;userx&quot;</span>)</span></code></pre></div>
 </div>
 <div id="permissions" class="section level3">
 <h3>Permissions</h3>
 <p>To set some DataSHIELD-compatible permissions (view without accessing individual-level data) to each tables of a project, use the following:</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">lapply</span>(<span class="kw">opal.tables</span>(o, <span class="st">&quot;CNSIM&quot;</span>)<span class="op">$</span>name, <span class="cf">function</span>(table) {</a>
-<a class="sourceLine" id="cb16-2" title="2">  <span class="kw">opal.table_perm_add</span>(o, <span class="st">&quot;CNSIM&quot;</span>, table, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)</a>
-<a class="sourceLine" id="cb16-3" title="3">})</a>
-<a class="sourceLine" id="cb16-4" title="4"><span class="co"># verify table permissions</span></a>
-<a class="sourceLine" id="cb16-5" title="5"><span class="kw">opal.table_perm</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="kw">lapply</span>(<span class="kw">opal.tables</span>(o, <span class="st">&quot;CNSIM&quot;</span>)<span class="op">$</span>name, <span class="cf">function</span>(table) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a>  <span class="kw">opal.table_perm_add</span>(o, <span class="st">&quot;CNSIM&quot;</span>, table, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>})</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a><span class="co"># verify table permissions</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="kw">opal.table_perm</span>(o, <span class="st">&quot;CNSIM&quot;</span>, <span class="st">&quot;CNSIM1&quot;</span>)</span></code></pre></div>
 <p>Similarly, permissions to use all the resources of a project in a DataSHIELD context is even simpler:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">opal.resources_perm_add</span>(o, <span class="st">&quot;RSRC&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)</a>
-<a class="sourceLine" id="cb17-2" title="2"><span class="co"># verify permissions</span></a>
-<a class="sourceLine" id="cb17-3" title="3"><span class="kw">opal.resources_perm</span>(o, <span class="st">&quot;RSRC&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true"></a><span class="kw">opal.resources_perm_add</span>(o, <span class="st">&quot;RSRC&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;demo&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;view&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true"></a><span class="co"># verify permissions</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true"></a><span class="kw">opal.resources_perm</span>(o, <span class="st">&quot;RSRC&quot;</span>)</span></code></pre></div>
 <p>Then grant permission to use the DataSHIELD service to a group of users:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="kw">dsadmin.perm_add</span>(o, <span class="dt">subject =</span> <span class="st">&quot;datashield&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;use&quot;</span>)</a>
-<a class="sourceLine" id="cb18-2" title="2"><span class="co"># verify permissions</span></a>
-<a class="sourceLine" id="cb18-3" title="3"><span class="kw">dsadmin.perm</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a><span class="kw">dsadmin.perm_add</span>(o, <span class="dt">subject =</span> <span class="st">&quot;datashield&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;group&quot;</span>, <span class="dt">permission =</span> <span class="st">&quot;use&quot;</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true"></a><span class="co"># verify permissions</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true"></a><span class="kw">dsadmin.perm</span>(o)</span></code></pre></div>
 <p>Note that it is also possible to grant permission to access a specific DataSHIELD profile (see Profiles section).</p>
 </div>
 </div>
 <div id="teardown" class="section level2">
 <h2>Teardown</h2>
 <p>Good practice is to free server resources by sending a logout request:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">opal.logout</span>(o)</a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a><span class="kw">opal.logout</span>(o)</span></code></pre></div>
 </div>
 
 

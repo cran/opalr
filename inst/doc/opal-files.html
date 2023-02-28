@@ -12,10 +12,39 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2023-02-03" />
+<meta name="date" content="2023-02-28" />
 
 <title>Opal Files</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -37,26 +66,27 @@
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(title);
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
     position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
+    border: none; display: inline-block;
     -webkit-touch-callout: none; -webkit-user-select: none;
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
@@ -65,9 +95,9 @@ pre.numberSource a.sourceLine::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {  }
+  {   }
 @media screen {
-a.sourceLine::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -319,7 +349,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Opal Files</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2023-02-03</h4>
+<h4 class="date">2023-02-28</h4>
 
 
 
@@ -335,43 +365,43 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li>read a file from the remote R session workspace.</li>
 </ul>
 <p>Setup the connection with Opal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(opalr)</a>
-<a class="sourceLine" id="cb1-2" title="2">o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(opalr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>)</span></code></pre></div>
 <p>Download a file:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>)</span></code></pre></div>
 <p>Download a file, protected by a password:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>, <span class="st">&quot;CNSIM-encrypted.zip&quot;</span>, <span class="dt">key=</span><span class="st">&quot;ABCDEFGHIJKL&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">opal.file_download</span>(o, <span class="st">&quot;/home/administrator/CNSIM.zip&quot;</span>, <span class="st">&quot;CNSIM-encrypted.zip&quot;</span>, <span class="dt">key=</span><span class="st">&quot;ABCDEFGHIJKL&quot;</span>)</span></code></pre></div>
 <p>Upload the file at another location:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">opal.file_upload</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="st">&quot;/projects/CNSIM&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">opal.file_upload</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="st">&quot;/projects/CNSIM&quot;</span>)</span></code></pre></div>
 <p>Create a folder and list folder content:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">fooDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/foo-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb5-2" title="2"><span class="kw">opal.file_mkdir</span>(o, fooDir)</a>
-<a class="sourceLine" id="cb5-3" title="3"><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>fooDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/foo-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="kw">opal.file_mkdir</span>(o, fooDir)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</span></code></pre></div>
 <p>Move file to the new folder and list folder content:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">opal.file_mv</span>(o, <span class="st">&quot;/projects/CNSIM/CNSIM.zip&quot;</span>, fooDir)</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw">opal.file_ls</span>(o, fooDir)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">opal.file_mv</span>(o, <span class="st">&quot;/projects/CNSIM/CNSIM.zip&quot;</span>, fooDir)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, fooDir)</span></code></pre></div>
 <p>Rename the new folder and list folder content:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">barDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/bar-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb7-2" title="2"><span class="kw">opal.file_mv</span>(o, fooDir, barDir)</a>
-<a class="sourceLine" id="cb7-3" title="3"><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>barDir &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;/projects/CNSIM/bar-&quot;</span>, <span class="kw">sample</span>(<span class="dv">10000</span><span class="op">:</span><span class="dv">99999</span>, <span class="dv">1</span>))</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">opal.file_mv</span>(o, fooDir, barDir)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</span></code></pre></div>
 <p>Extract the content of the archive file into a folder:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">out &lt;-<span class="st"> </span><span class="kw">opal.file_unzip</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>), barDir)</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="kw">opal.file_ls</span>(o, out)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>out &lt;-<span class="st"> </span><span class="kw">opal.file_unzip</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>), barDir)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, out)</span></code></pre></div>
 <p>Write a file from the Opal file system into the R server session workspace:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">opal.file_write</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>))</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="kw">opal.execute</span>(o, <span class="st">&quot;list.files()&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">opal.file_write</span>(o, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/CNSIM.zip&quot;</span>))</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="st">&quot;list.files()&quot;</span>)</span></code></pre></div>
 <p>Read back the file into the Opal file system:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">opal.file_read</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/ds.zip&quot;</span>))</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="kw">opal.file_ls</span>(o, barDir)</a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">opal.file_read</span>(o, <span class="st">&quot;CNSIM.zip&quot;</span>, <span class="kw">paste0</span>(barDir, <span class="st">&quot;/ds.zip&quot;</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, barDir)</span></code></pre></div>
 <p>Remove created folder and list folder content:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">opal.file_rm</span>(o, barDir)</a>
-<a class="sourceLine" id="cb11-2" title="2"><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">opal.file_rm</span>(o, barDir)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">opal.file_ls</span>(o, <span class="st">&quot;/projects/CNSIM&quot;</span>)</span></code></pre></div>
 <p>Good practice is to free server resources by sending a logout request:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="co"># clean server side</span></a>
-<a class="sourceLine" id="cb12-2" title="2"><span class="kw">opal.logout</span>(o)</a>
-<a class="sourceLine" id="cb12-3" title="3"><span class="co"># clean client side</span></a>
-<a class="sourceLine" id="cb12-4" title="4"><span class="kw">unlink</span>(<span class="st">&quot;CNSIM-encrypted.zip&quot;</span>)</a>
-<a class="sourceLine" id="cb12-5" title="5"><span class="kw">unlink</span>(<span class="st">&quot;CNSIM.zip&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co"># clean server side</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="kw">opal.logout</span>(o)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="co"># clean client side</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a><span class="kw">unlink</span>(<span class="st">&quot;CNSIM-encrypted.zip&quot;</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a><span class="kw">unlink</span>(<span class="st">&quot;CNSIM.zip&quot;</span>)</span></code></pre></div>
 
 
 
