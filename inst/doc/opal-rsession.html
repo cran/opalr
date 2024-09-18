@@ -12,7 +12,7 @@
 
 <meta name="author" content="Yannick Marcon" />
 
-<meta name="date" content="2024-01-10" />
+<meta name="date" content="2024-09-18" />
 
 <title>Opal R Session</title>
 
@@ -29,46 +29,31 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -80,55 +65,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -356,69 +340,86 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Opal R Session</h1>
 <h4 class="author">Yannick Marcon</h4>
-<h4 class="date">2024-01-10</h4>
+<h4 class="date">2024-09-18</h4>
 
 
 
-<p><a href="https://www.obiba.org/pages/products/opal/">Opal</a> is connected with one or more R servers. Each Opal user having the appropriate permissions can create a R session on the server side through Opal. See the <a href="http://opaldoc.obiba.org/en/latest/admin/rserver.html">R Server</a> documentation page that explains the relationship beteen Opal and the R servers. The Opal R package exposes data management related functions:</p>
+<p><a href="https://www.obiba.org/pages/products/opal/">Opal</a> is
+connected with one or more R servers. Each Opal user having the
+appropriate permissions can create a R session on the server side
+through Opal. See the <a href="http://opaldoc.obiba.org/en/latest/admin/rserver.html">R
+Server</a> documentation page that explains the relationship beteen Opal
+and the R servers. The Opal R package exposes data management related
+functions:</p>
 <ul>
 <li>assignment of Opal data into the remote R session,</li>
 <li>execution of R expressions on server side,</li>
 <li>management of R workspace image.</li>
 </ul>
-<p>Note that these functions do create a R session on the server side.</p>
+<p>Note that these functions do create a R session on the server
+side.</p>
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<p>Setup the connection with Opal, specifying that the R server session must be created with the “default” profile, i.e. in the “default” R servers cluster (note that the profile parameter is optional):</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(opalr)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>o &lt;-<span class="st"> </span><span class="kw">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>, <span class="dt">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
+<p>Setup the connection with Opal, specifying that the R server session
+must be created with the “default” profile, i.e. in the “default” R
+servers cluster (note that the profile parameter is optional):</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(opalr)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">opal.login</span>(<span class="st">&quot;administrator&quot;</span>, <span class="st">&quot;password&quot;</span>, <span class="st">&quot;https://opal-demo.obiba.org&quot;</span>, <span class="at">profile =</span> <span class="st">&quot;default&quot;</span>)</span></code></pre></div>
 </div>
 <div id="assign" class="section level2">
 <h2>Assign</h2>
-<p>Assign a Opal table to a <em>data.frame</em> (if user has permission to see values of the Opal table):</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">opal.assign.table</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;df&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
-<p>In place of a standard <em>data.frame</em>, Opal can assign data into a <a href="https://tibble.tidyverse.org/">tibble</a>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">opal.assign.table.tibble</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;tbl&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
+<p>Assign a Opal table to a <em>data.frame</em> (if user has permission
+to see values of the Opal table):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">opal.assign.table</span>(o, <span class="at">symbol =</span> <span class="st">&quot;df&quot;</span>, <span class="at">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
+<p>In place of a standard <em>data.frame</em>, Opal can assign data into
+a <a href="https://tibble.tidyverse.org/">tibble</a>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">opal.assign.table.tibble</span>(o, <span class="at">symbol =</span> <span class="st">&quot;tbl&quot;</span>, <span class="at">value =</span> <span class="st">&quot;CNSIM.CNSIM1&quot;</span>)</span></code></pre></div>
 <p>Resource objects can be assigned to the R server session:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">opal.assign.resource</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;rsrc&quot;</span>, <span class="dt">value =</span> <span class="st">&quot;RSRC.CNSIM3&quot;</span>)</span></code></pre></div>
-<p>An R expression can also be assigned to a symbol (use <code>quote()</code> to not interpret the expression in the client side R session). As an example assign a function body:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">opal.assign.script</span>(o, <span class="dt">symbol =</span> <span class="st">&quot;hello&quot;</span>, <span class="dt">value =</span> <span class="kw">quote</span>(<span class="cf">function</span>(x) { <span class="kw">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }))</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">opal.assign.resource</span>(o, <span class="at">symbol =</span> <span class="st">&quot;rsrc&quot;</span>, <span class="at">value =</span> <span class="st">&quot;RSRC.CNSIM3&quot;</span>)</span></code></pre></div>
+<p>An R expression can also be assigned to a symbol (use
+<code>quote()</code> to not interpret the expression in the client side
+R session). As an example assign a function body:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">opal.assign.script</span>(o, <span class="at">symbol =</span> <span class="st">&quot;hello&quot;</span>, <span class="at">value =</span> <span class="fu">quote</span>(<span class="cf">function</span>(x) { <span class="fu">paste0</span>(<span class="st">&quot;Hello &quot;</span>, x, <span class="st">&quot;!&quot;</span>) }))</span></code></pre></div>
 <p>List the R symbols that lives in the remote R session:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">opal.symbols</span>(o)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">opal.symbols</span>(o)</span></code></pre></div>
 </div>
 <div id="execute" class="section level2">
 <h2>Execute</h2>
 <p>R expressions can be executed on the server side:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co"># column names</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;names(tbl)&quot;</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="co"># get variable description from column attributes</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;attributes(tbl$GENDER)&quot;</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="co"># coerce resource to a data.frame and plot histogram of one column</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="kw">plot</span>(<span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hist(as.data.frame(rsrc)$LAB_HDL)&quot;</span>))</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="co"># execute the custom function</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;hello(&#39;friends&#39;)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># column names</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">opal.execute</span>(o, <span class="at">script =</span> <span class="st">&quot;names(tbl)&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co"># get variable description from column attributes</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="fu">opal.execute</span>(o, <span class="at">script =</span> <span class="st">&quot;attributes(tbl$GENDER)&quot;</span>)</span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co"># coerce resource to a data.frame and plot histogram of one column</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">opal.execute</span>(o, <span class="at">script =</span> <span class="st">&quot;hist(as.data.frame(rsrc)$LAB_HDL)&quot;</span>))</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="co"># execute the custom function</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="fu">opal.execute</span>(o, <span class="at">script =</span> <span class="st">&quot;hello(&#39;friends&#39;)&quot;</span>)</span></code></pre></div>
 <p>The remote data can be downloaded into the client side R session:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>GENDER &lt;-<span class="st"> </span><span class="kw">opal.execute</span>(o, <span class="dt">script =</span> <span class="st">&quot;tbl$GENDER&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>GENDER <span class="ot">&lt;-</span> <span class="fu">opal.execute</span>(o, <span class="at">script =</span> <span class="st">&quot;tbl$GENDER&quot;</span>)</span></code></pre></div>
 <p>To execute more complex R code, use a local source file:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">opal.execute.source</span>(o, <span class="dt">path =</span> <span class="st">&quot;/path/to/some_code.R&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">opal.execute.source</span>(o, <span class="at">path =</span> <span class="st">&quot;/path/to/some_code.R&quot;</span>)</span></code></pre></div>
 </div>
 <div id="files" class="section level2">
 <h2>Files</h2>
-<p>Files can be written from the Opal file system to the R server session folder:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">opal.file_write</span>(o, <span class="dt">source =</span> <span class="st">&quot;/projects/CNSIM/CNSIM3.zip&quot;</span>, <span class="st">&quot;test.zip&quot;</span>)</span></code></pre></div>
-<p>Similarly, files can be read from the R server session folder into the Opal file system:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="kw">opal.file_read</span>(o, <span class="dt">source =</span> <span class="st">&quot;test.zip&quot;</span>, <span class="dt">destination =</span> <span class="st">&quot;/tmp&quot;</span>)</span></code></pre></div>
+<p>Files can be written from the Opal file system to the R server
+session folder:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">opal.file_write</span>(o, <span class="at">source =</span> <span class="st">&quot;/projects/CNSIM/CNSIM3.zip&quot;</span>, <span class="st">&quot;test.zip&quot;</span>)</span></code></pre></div>
+<p>Similarly, files can be read from the R server session folder into
+the Opal file system:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">opal.file_read</span>(o, <span class="at">source =</span> <span class="st">&quot;test.zip&quot;</span>, <span class="at">destination =</span> <span class="st">&quot;/tmp&quot;</span>)</span></code></pre></div>
 </div>
 <div id="workspace" class="section level2">
 <h2>Workspace</h2>
-<p>The image of the remote R session can be saved in a <em>workspace</em> (to be restored at login time):</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="kw">opal.workspace_save</span>(o, <span class="dt">save=</span><span class="st">&quot;demo&quot;</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="kw">opal.workspaces</span>(o)</span></code></pre></div>
+<p>The image of the remote R session can be saved in a
+<em>workspace</em> (to be restored at login time):</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">opal.workspace_save</span>(o, <span class="at">save=</span><span class="st">&quot;demo&quot;</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">opal.workspaces</span>(o)</span></code></pre></div>
 </div>
 <div id="teardown" class="section level2">
 <h2>Teardown</h2>
-<p>Good practice is to free server resources by sending a logout request:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="kw">opal.logout</span>(o)</span></code></pre></div>
+<p>Good practice is to free server resources by sending a logout
+request:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">opal.logout</span>(o)</span></code></pre></div>
 </div>
 
 

@@ -318,7 +318,15 @@ opal.delete <- function(opal, ..., query = list(), callback = NULL) {
 #' @import utils
 #' @keywords internal
 .url <- function(opal, ...) {
-  utils::URLencode(paste(opal$url, "ws", paste(c(...), collapse = "/"), sep = "/"))
+  parts <- c(...)
+  parts <- parts[parts != ""]
+  .cleanUrl(utils::URLencode(paste(opal$url, "ws", paste(parts, collapse = "/"), sep = "/")))
+}
+
+# Function to replace duplicated slashes but preserve '://'
+.cleanUrl <- function(url) {
+  # Replace duplicated slashes only after the protocol (://)
+  gsub("(?<!:)//+", "/", url, perl = TRUE)
 }
 
 #' Constructs the value for the Authorization header
@@ -510,9 +518,9 @@ opal.delete <- function(opal, ..., query = list(), callback = NULL) {
   opalUrl <- url
   if (startsWith(url, "http://localhost:8080")) {
     opalUrl <- gsub("http://localhost:8080", "https://localhost:8443", url)
-    warning("Deprecation: connecting through secure http is required. Replacing http://localhost:8080 by https://localhost:8443.")
+    warning("Deprecation: connecting through secure http is required. Replacing http://localhost:8080 by https://localhost:8443.", call. = FALSE)
   } else if (startsWith(url, "http://")) {
-    stop("Deprecation: connecting through secure http is required.")
+    stop("Deprecation: connecting through secure http is required.", call. = FALSE)
   }
   urlObj <- httr::parse_url(opalUrl)
   
@@ -597,6 +605,10 @@ opal.delete <- function(opal, ..., query = list(), callback = NULL) {
   }
   opal$uprofile <- .handleResponse(opal, r)
   opal$username <- opal$uprofile$principal
+  
+  if (isTRUE(opal$uprofile$otpRequired)) {
+    warning("Enabling 2FA is required, connect to Opal web page to set up your secret.", call. = FALSE)
+  }
   
   opal
 }
